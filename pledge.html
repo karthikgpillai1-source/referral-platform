@@ -63,12 +63,21 @@
             </div>
 
             <!-- Voice Controls -->
-            <div id="voice-controls-section" style="margin-bottom: 24px; display: flex; justify-content: center; gap: 12px; align-items: center;">
+            <div id="voice-controls-section" style="margin-bottom: 24px; display: flex; justify-content: center; gap: 12px; align-items: center; flex-wrap: wrap;">
                 <button id="btn-play-voice" class="btn btn-secondary btn-md">
                     ▶ Play
                 </button>
-                <button id="btn-stop-voice" class="btn btn-secondary btn-md">
+                <button id="btn-pause-voice" class="btn btn-secondary btn-md" style="display: none;">
+                    ⏸ Pause
+                </button>
+                <button id="btn-resume-voice" class="btn btn-secondary btn-md" style="display: none;">
+                    ▶ Resume
+                </button>
+                <button id="btn-stop-voice" class="btn btn-secondary btn-md" style="display: none;">
                     ⏹ Stop
+                </button>
+                <button id="btn-restart-voice" class="btn btn-secondary btn-md" style="display: none;">
+                    🔄 Restart
                 </button>
             </div>
 

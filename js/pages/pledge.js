@@ -13,6 +13,15 @@ const synth = window.speechSynthesis;
 let isReading = false;
 let selectedVoice = null;
 
+// Sliced playback state variables to fallback from buggy native pause/resume
+let lastBoundaryCharIndex = 0;
+let currentUtteranceOffset = 0;
+let isPaused = false;
+let currentWordIndex = 0;
+let currentCharIndex = 0;
+let currentSentenceText = '';
+let resumeWatchdog = null;
+
 const PLEDGES = {
     1: "I pledge to lead a drug-free life, value my health, support others in making healthy choices, and contribute to building a safe, drug-free community.",
     2: "I solemnly swear to never use or distribute harmful substances, to protect my peers from substance abuse, and to actively advocate for wellness, safety, and awareness.",
@@ -99,6 +108,19 @@ function loadStep(step) {
     stopReading();
     hideSpeechInfoMessage();
 
+    // Reset offsets
+    currentUtteranceOffset = 0;
+    lastBoundaryCharIndex = 0;
+    isPaused = false;
+    isReading = false;
+    currentWordIndex = 0;
+    currentCharIndex = 0;
+    currentSentenceText = '';
+    if (resumeWatchdog) {
+        clearTimeout(resumeWatchdog);
+        resumeWatchdog = null;
+    }
+
     // Reset Checkbox & Continue button states
     const chk = document.getElementById('pledge-chk');
     if (chk) {
@@ -164,7 +186,7 @@ function loadStep(step) {
     }
 
     // Setup speech synthesis
-    setupUtterance();
+    setupUtterance(spokenPledgeText);
 
     // Bind controls
     setupControls();
@@ -181,12 +203,15 @@ function loadStep(step) {
     }, 100);
 }
 
-function setupUtterance() {
+function setupUtterance(textSlice) {
     if (!synth) return;
 
     synth.cancel();
+    if (synth.paused) {
+        synth.resume();
+    }
 
-    utterance = new SpeechSynthesisUtterance(spokenPledgeText);
+    utterance = new SpeechSynthesisUtterance(textSlice);
     utterance.rate = 0.92;
     utterance.pitch = 1.0;
     utterance.volume = 1.0;
@@ -195,25 +220,58 @@ function setupUtterance() {
     window.activeUtterance = utterance;
 
     // Voice Selection Priority
-    const voices = synth.getVoices();
-    setIndianVoice(voices);
+    if (selectedVoice) {
+        utterance.voice = selectedVoice;
+    } else {
+        const voices = synth.getVoices();
+        setIndianVoice(voices);
+    }
+
     if (synth.onvoiceschanged !== undefined) {
         synth.onvoiceschanged = () => {
-            setIndianVoice(synth.getVoices());
+            if (!selectedVoice) setIndianVoice(synth.getVoices());
         };
     }
 
+    utterance.onstart = (event) => {
+        console.log(`[Pledge Speech Event - start] speaking: ${synth.speaking}, paused: ${synth.paused}`);
+        startVisualizer();
+    };
+
+    utterance.onpause = (event) => {
+        console.log(`[Pledge Speech Event - pause] speaking: ${synth.speaking}, paused: ${synth.paused}`);
+        stopVisualizer();
+        updateUIState('paused');
+    };
+
+    utterance.onresume = (event) => {
+        console.log(`[Pledge Speech Event - resume] speaking: ${synth.speaking}, paused: ${synth.paused}`);
+        if (resumeWatchdog) {
+            console.log("[Pledge Speech] Watchdog cleared by onresume event.");
+            clearTimeout(resumeWatchdog);
+            resumeWatchdog = null;
+        }
+        startVisualizer();
+        updateUIState('speaking');
+    };
+
+    utterance.onend = (event) => {
+        console.log(`[Pledge Speech Event - end] speaking: ${synth.speaking}, paused: ${synth.paused}`);
+        handleSpeechEnd();
+    };
+
     utterance.onboundary = handleSpeechBoundary;
-    utterance.onend = handleSpeechEnd;
+    
     utterance.onerror = (e) => {
+        console.error(`[Pledge Speech Event - error] error: ${e.error}, speaking: ${synth.speaking}, paused: ${synth.paused}`);
         cleanupUtterance();
         stopVisualizer();
         clearWordHighlights();
+        updateUIState('stopped');
         
         if (e.error === 'not-allowed') {
             showSpeechInfoMessage('Voice narration is available. Press Play to listen.');
         } else if (e.error !== 'interrupted' && e.error !== 'canceled') {
-            // Non-blocking fallback for other real errors
             showSpeechInfoMessage("Voice narration isn't available on this device. You can continue by reading the pledge.");
         }
     };
@@ -240,8 +298,21 @@ function setupControls() {
     if (playBtn) {
         const newPlay = playBtn.cloneNode(true);
         playBtn.parentNode.replaceChild(newPlay, playBtn);
-        newPlay.textContent = '▶ Play';
-        newPlay.addEventListener('click', togglePlay);
+        newPlay.addEventListener('click', startPlay);
+    }
+
+    const pauseBtn = document.getElementById('btn-pause-voice');
+    if (pauseBtn) {
+        const newPause = pauseBtn.cloneNode(true);
+        pauseBtn.parentNode.replaceChild(newPause, pauseBtn);
+        newPause.addEventListener('click', pausePlay);
+    }
+
+    const resumeBtn = document.getElementById('btn-resume-voice');
+    if (resumeBtn) {
+        const newResume = resumeBtn.cloneNode(true);
+        resumeBtn.parentNode.replaceChild(newResume, resumeBtn);
+        newResume.addEventListener('click', resumePlay);
     }
 
     const stopBtn = document.getElementById('btn-stop-voice');
@@ -249,6 +320,13 @@ function setupControls() {
         const newStop = stopBtn.cloneNode(true);
         stopBtn.parentNode.replaceChild(newStop, stopBtn);
         newStop.addEventListener('click', stopReading);
+    }
+
+    const restartBtn = document.getElementById('btn-restart-voice');
+    if (restartBtn) {
+        const newRestart = restartBtn.cloneNode(true);
+        restartBtn.parentNode.replaceChild(newRestart, restartBtn);
+        newRestart.addEventListener('click', restartPlay);
     }
 
     const chk = document.getElementById('pledge-chk');
@@ -269,64 +347,167 @@ function setupControls() {
 function trySpeak() {
     if (!synth || !utterance) return;
     isReading = true;
-    updatePlayButtonText('⏸ Pause');
+    isPaused = false;
+    updateUIState('speaking');
     startVisualizer();
     synth.speak(utterance);
 }
 
-function togglePlay() {
-    if (!synth || !utterance) return;
+function startPlay() {
+    console.log("[Pledge Speech] Play clicked. Starting narration.");
+    if (!synth) return;
+    stopReading(); // Reset state to ensure clean play
+    setupUtterance(spokenPledgeText);
+    isReading = true;
+    isPaused = false;
+    updateUIState('speaking');
+    startVisualizer();
+    synth.speak(utterance);
+}
 
-    if (isReading) {
-        synth.pause();
-        isReading = false;
-        updatePlayButtonText('▶ Resume');
-        stopVisualizer();
-    } else {
-        if (synth.paused) {
-            synth.resume();
-        } else {
-            synth.speak(utterance);
-        }
-        isReading = true;
-        updatePlayButtonText('⏸ Pause');
-        startVisualizer();
+function pausePlay() {
+    console.log("[Pledge Speech] Pause clicked.");
+    if (!synth) return;
+    isReading = false;
+    isPaused = true;
+    updateUIState('paused');
+    stopVisualizer();
+    
+    console.log(`[Pledge Speech] Before calling native pause. speaking: ${synth.speaking}, paused: ${synth.paused}`);
+    synth.pause();
+    console.log(`[Pledge Speech] After calling native pause. speaking: ${synth.speaking}, paused: ${synth.paused}`);
+}
+
+function resumePlay() {
+    console.log("[Pledge Speech] Resume clicked.");
+    if (!synth) return;
+    
+    isReading = true;
+    isPaused = false;
+    updateUIState('speaking');
+    startVisualizer();
+
+    // Set up watchdog timer to detect native resume failure.
+    if (resumeWatchdog) clearTimeout(resumeWatchdog);
+    resumeWatchdog = setTimeout(() => {
+        console.warn("[Pledge Speech] Watchdog fired: Native resume failed or timed out. Activating fallback resume...");
+        triggerFallbackResume();
+    }, 800);
+
+    console.log(`[Pledge Speech] Before calling native resume. speaking: ${synth.speaking}, paused: ${synth.paused}`);
+    synth.resume();
+    console.log(`[Pledge Speech] After calling native resume. speaking: ${synth.speaking}, paused: ${synth.paused}`);
+}
+
+function triggerFallbackResume() {
+    console.log(`[Pledge Speech Fallback Triggered] Attempting to resume from word index: ${currentWordIndex}`);
+    if (resumeWatchdog) {
+        clearTimeout(resumeWatchdog);
+        resumeWatchdog = null;
     }
+    
+    // Cancel the current stuck utterance
+    synth.cancel();
+    if (synth.paused) {
+        synth.resume(); // Ensure we reset the paused state in the browser engine
+    }
+
+    // Determine the character offset of the last spoken word
+    const startSegment = spokenSegments.find(s => s.origIndex === currentWordIndex);
+    const startChar = startSegment ? startSegment.start : 0;
+    currentUtteranceOffset = startChar;
+
+    const textSlice = spokenPledgeText.substring(currentUtteranceOffset);
+    console.log(`[Pledge Speech Fallback] Text slice: "${textSlice}"`);
+    if (!textSlice.trim()) {
+        handleSpeechEnd();
+        return;
+    }
+
+    // Set up a new utterance with the remaining text
+    setupUtterance(textSlice);
+
+    isReading = true;
+    isPaused = false;
+    updateUIState('speaking');
+    startVisualizer();
+
+    synth.speak(utterance);
+    console.log(`[Pledge Speech Fallback] Speaking started. speaking: ${synth.speaking}, paused: ${synth.paused}`);
 }
 
 function stopReading() {
+    console.log("[Pledge Speech] Stop clicked.");
+    if (resumeWatchdog) {
+        clearTimeout(resumeWatchdog);
+        resumeWatchdog = null;
+    }
     if (!synth) return;
     synth.cancel();
+    if (synth.paused) {
+        synth.resume();
+    }
     cleanupUtterance();
     isReading = false;
-    updatePlayButtonText('▶ Play');
+    isPaused = false;
+    currentUtteranceOffset = 0;
+    lastBoundaryCharIndex = 0;
+    currentWordIndex = 0;
+    currentCharIndex = 0;
+    currentSentenceText = '';
+    updateUIState('stopped');
     stopVisualizer();
     clearWordHighlights();
-    setupUtterance(); // Reinitialize for play again
+    setupUtterance(spokenPledgeText); // Reinitialize
+}
+
+function restartPlay() {
+    console.log("[Pledge Speech] Restart clicked.");
+    stopReading();
+    startPlay();
 }
 
 function handleSpeechBoundary(event) {
+    if (resumeWatchdog) {
+        console.log("[Pledge Speech] Watchdog cleared by onboundary event.");
+        clearTimeout(resumeWatchdog);
+        resumeWatchdog = null;
+    }
     if (event.name !== 'word') return;
-    const charIndex = event.charIndex;
-    const active = spokenSegments.find(s => charIndex >= s.start && charIndex < s.end);
+    
+    // Global index aligns characters back to original full text
+    const globalCharIndex = currentUtteranceOffset + event.charIndex;
+    const active = spokenSegments.find(s => globalCharIndex >= s.start && globalCharIndex < s.end);
 
     if (active) {
         clearWordHighlights();
         const activeSpan = document.getElementById(`word-${active.origIndex}`);
         if (activeSpan) activeSpan.classList.add('active');
+        
+        lastBoundaryCharIndex = active.start;
+        currentCharIndex = globalCharIndex;
+        currentWordIndex = active.origIndex;
+        
+        currentSentenceText = getSentenceContainingChar(chosenPledgeText, currentCharIndex);
+        
+        console.log(`[Pledge Speech Event - boundary] word: "${spokenPledgeText.substring(active.start, active.end)}", ` +
+                    `globalCharIndex: ${globalCharIndex}, currentWordIndex: ${currentWordIndex}, sentence: "${currentSentenceText}"`);
     }
 }
 
 function handleSpeechEnd() {
     cleanupUtterance();
     isReading = false;
-    updatePlayButtonText('▶ Play');
+    updateUIState('stopped');
     stopVisualizer();
     clearWordHighlights();
 }
 
 function cleanupUtterance() {
     if (utterance) {
+        utterance.onstart = null;
+        utterance.onpause = null;
+        utterance.onresume = null;
         utterance.onboundary = null;
         utterance.onend = null;
         utterance.onerror = null;
@@ -347,9 +528,49 @@ function stopVisualizer() {
     document.querySelectorAll('.visualizer-node').forEach(node => node.classList.remove('active'));
 }
 
-function updatePlayButtonText(text) {
+function updateUIState(state) {
+    console.log(`[Pledge Speech State Change] New state: ${state}. Browser speaking: ${synth ? synth.speaking : false}, paused: ${synth ? synth.paused : false}`);
     const playBtn = document.getElementById('btn-play-voice');
-    if (playBtn) playBtn.textContent = text;
+    const pauseBtn = document.getElementById('btn-pause-voice');
+    const resumeBtn = document.getElementById('btn-resume-voice');
+    const stopBtn = document.getElementById('btn-stop-voice');
+    const restartBtn = document.getElementById('btn-restart-voice');
+
+    if (!playBtn || !pauseBtn || !resumeBtn || !stopBtn || !restartBtn) return;
+
+    if (state === 'speaking') {
+        playBtn.style.display = 'none';
+        pauseBtn.style.display = 'inline-block';
+        resumeBtn.style.display = 'none';
+        stopBtn.style.display = 'inline-block';
+        restartBtn.style.display = 'inline-block';
+    } else if (state === 'paused') {
+        playBtn.style.display = 'none';
+        pauseBtn.style.display = 'none';
+        resumeBtn.style.display = 'inline-block';
+        stopBtn.style.display = 'inline-block';
+        restartBtn.style.display = 'inline-block';
+    } else { // 'stopped'
+        playBtn.style.display = 'inline-block';
+        pauseBtn.style.display = 'none';
+        resumeBtn.style.display = 'none';
+        stopBtn.style.display = 'none';
+        restartBtn.style.display = 'none';
+    }
+}
+
+function getSentenceContainingChar(text, charIndex) {
+    const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
+    let offset = 0;
+    for (const sentence of sentences) {
+        const start = offset;
+        const end = offset + sentence.length;
+        if (charIndex >= start && charIndex <= end) {
+            return sentence.trim();
+        }
+        offset = end;
+    }
+    return text;
 }
 
 function showVoiceFallbackNotice(msg) {
