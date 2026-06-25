@@ -2,9 +2,10 @@ import { DatabaseService } from '../services/supabase.js?v=3';
 import { CertificateService } from '../services/certificate.js';
 import { ReferralService } from '../services/referral.js';
 import { Utils } from '../utils.js';
+import { CONFIG } from '../config.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-    const certId = Utils.getQueryParam('id');
+    const certId = Utils.getQueryParam('certificate') || Utils.getQueryParam('id');
     
     if (certId) {
         verifyCertificate(certId);
@@ -58,7 +59,7 @@ async function verifyCertificate(certId) {
             }
 
             // Render Certificate QR Code (embeds verification link)
-            const verificationUrl = `${window.location.origin}/verify?id=${certData.certificate_id}`;
+            const verificationUrl = `${CONFIG.APP_URL}/verify?certificate=${certData.certificate_id}`;
             CertificateService.renderQRCode('cert-qr-container', verificationUrl);
 
             // Setup Referral Link Display

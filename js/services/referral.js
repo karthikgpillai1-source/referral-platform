@@ -4,7 +4,7 @@ export const ReferralService = {
     // Generate referral link based on referral code
     generateReferralLink(code) {
         if (!code) return '';
-        return `${window.location.origin}/?ref=${code}`;
+        return `${CONFIG.APP_URL}/?ref=${code}`;
     },
 
     // Check query params for referral code

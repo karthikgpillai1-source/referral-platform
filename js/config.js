@@ -11,7 +11,7 @@ export const CONFIG = {
     },
 
     // App URL settings
-    APP_URL: window.location.origin,
+    APP_URL: 'https://referral-platform-navy.vercel.app',
 
     // Storage keys
     LOCAL_STORAGE_KEYS: {

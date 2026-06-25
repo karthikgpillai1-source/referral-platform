@@ -1,4 +1,4 @@
-// WhatsApp Messaging Integration Service
+import { CONFIG } from '../config.js';
 
 export const WhatsAppService = {
     // Generate simple deep link URL
@@ -10,14 +10,14 @@ export const WhatsAppService = {
 
     // Share unique referral link with others
     shareReferralLink(referralCode, referrerName) {
-        const link = `${window.location.origin}/register.html?ref=${referralCode}`;
+        const link = `${CONFIG.APP_URL}/register.html?ref=${referralCode}`;
         const text = `Hey! I just registered for the Referral & Outreach Campaign. Register using my link to track points and win certificates: ${link}`;
         return this._buildWhatsAppUrl('', text);
     },
 
     // Invite a specific contact on WhatsApp
     inviteContact(phone, referrerName) {
-        const text = `Hello! Join me in the Referral & Outreach Campaign. Register here: ${window.location.origin}/register.html`;
+        const text = `Hello! Join me in the Referral & Outreach Campaign. Register here: ${CONFIG.APP_URL}/register.html`;
         return this._buildWhatsAppUrl(phone, text);
     },
 

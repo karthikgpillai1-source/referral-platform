@@ -331,10 +331,20 @@ header {
     top: 0;
     transform: translateY(-50%) scale(0.85);
     left: 8px;
-    background: var(--bg-dark);
+    background: var(--bg-card);
     padding: 0 var(--space-8);
     color: var(--primary);
     font-weight: 700;
+}
+
+/* Autofill style overrides for premium dark inputs */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px var(--bg-card) inset !important;
+    -webkit-text-fill-color: #ffffff !important;
+    transition: background-color 5000s ease-in-out 0s;
 }
 
 /* Legacy Form Fields */
@@ -684,7 +694,7 @@ footer {
     justify-content: center;
     color: var(--text-muted);
     font-size: 13px;
-    margin-top: var(--space-48);
+    margin-top: var(--space-24);
 }
 
 /* ==============================================================

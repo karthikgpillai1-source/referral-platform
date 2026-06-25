@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (copyCampaignLinkBtn) {
         copyCampaignLinkBtn.addEventListener('click', () => {
-            const regLink = `${window.location.origin}/register`;
+            const regLink = `${CONFIG.APP_URL}/register`;
             navigator.clipboard.writeText(regLink)
                 .then(() => Utils.showToast('Registration link copied!', 'success'))
                 .catch(() => Utils.showToast('Failed to copy link.', 'error'));
@@ -163,7 +163,7 @@ function handleGenerateCampaignLink() {
         return;
     }
 
-    const campaignLink = `${window.location.origin}/register?campaign=${campaignId}`;
+    const campaignLink = `${CONFIG.APP_URL}/register?campaign=${campaignId}`;
     const outputContainer = document.getElementById('campaign-output-container');
     const outputInput = document.getElementById('campaign-link-output');
     const copyBtn = document.getElementById('btn-copy-campaign-output');
