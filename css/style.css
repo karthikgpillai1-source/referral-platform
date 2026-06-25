@@ -180,9 +180,10 @@ header {
     justify-content: space-between;
     align-items: center;
     height: 56px;
-    background: rgba(11, 11, 13, 0.85);
-    backdrop-filter: blur(6px);
-    border: 1px solid var(--border-color);
+    background: rgba(11, 11, 13, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
     border-radius: var(--border-radius-md);
     padding: 0 var(--space-16);
     max-width: 900px;
@@ -201,10 +202,7 @@ header {
     font-weight: 800;
     font-size: 16px;
     letter-spacing: 0.05em;
-    color: var(--text-main);
-    background: linear-gradient(135deg, #ffffff 50%, var(--primary) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: #ffffff;
 }
 
 .logo-sub {
