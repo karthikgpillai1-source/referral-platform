@@ -294,6 +294,7 @@ header {
 /* Luxury Form Elements with Floating Labels */
 .form-group-luxury {
     position: relative;
+    margin-top: 12px;
     margin-bottom: var(--space-16);
 }
 
@@ -328,13 +329,13 @@ header {
 
 .form-control-luxury:focus ~ .form-label-luxury,
 .form-control-luxury:not(:placeholder-shown) ~ .form-label-luxury {
-    top: 0;
-    transform: translateY(-50%) scale(0.85);
-    left: 8px;
-    background: var(--bg-card);
-    padding: 0 var(--space-8);
+    top: -18px;
+    transform: translateY(0) scale(0.85);
+    left: 0;
+    background: transparent;
+    padding: 0;
     color: var(--primary);
-    font-weight: 700;
+    font-weight: 600;
 }
 
 /* Autofill style overrides for premium dark inputs */
