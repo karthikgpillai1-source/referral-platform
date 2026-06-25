@@ -15,10 +15,10 @@
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             border-radius: var(--border-radius-lg);
-            padding: 48px;
+            padding: var(--space-48);
             text-align: center;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-            margin-top: 64px;
+            margin-top: var(--space-64);
         }
     </style>
 </head>
@@ -35,19 +35,20 @@
     </header>
 
     <!-- Centered Form Container -->
-    <main class="container" style="max-width: 600px; padding: 0 24px;">
+    <main class="container" style="max-width: 600px; padding: 0 var(--space-24);">
 
         <!-- NAME COLLECTION VIEW -->
         <div class="register-card fade-in">
-            <h2 style="font-size: 36px; margin-bottom: 12px; font-weight: 800;">Take the Pledge</h2>
-            <p style="margin-bottom: 40px; font-size: 15px; color: var(--text-muted);">Please provide your full name as you wish it to appear on your verified campaign certificate.</p>
+            <h2 style="font-size: 32px; margin-bottom: 12px; font-weight: 800; font-family: var(--font-heading);">Take the Pledge</h2>
+            <p style="margin-bottom: 40px; font-size: 14px; color: var(--text-muted);">Please provide your full name as you wish it to appear on your verified campaign certificate.</p>
 
-            <div class="form-group" style="margin-bottom: 32px; max-width: 450px; margin-left: auto; margin-right: auto; position: relative;">
-                <input type="text" id="collect-name-input" class="form-control" placeholder="Enter your full name" style="padding: 18px; font-size: 16px; text-align: center; border-radius: var(--border-radius-sm);" required minlength="3" maxlength="100" autocomplete="off">
+            <div class="form-group-luxury" style="max-width: 450px; margin: 0 auto var(--space-32);">
+                <input type="text" id="collect-name-input" class="form-control-luxury" placeholder=" " required minlength="3" maxlength="100" autocomplete="off" style="text-align: center;">
+                <label class="form-label-luxury" for="collect-name-input" style="width: 100%; text-align: center; left: 0;">Enter your full name</label>
             </div>
 
-            <button type="button" id="btn-continue-name" class="btn btn-primary btn-md" style="width: 100%; max-width: 450px; padding: 14px; font-size: 16px; border-radius: var(--border-radius-sm);">
-                Continue to Pledges <i data-lucide="arrow-right" style="width: 18px; height: 18px;"></i>
+            <button type="button" id="btn-continue-name" class="btn btn-primary btn-md" style="width: 100%; max-width: 450px;">
+                Continue to Pledges <i data-lucide="arrow-right" style="width: 16px; height: 16px;"></i>
             </button>
         </div>
 
@@ -62,19 +63,21 @@
     <script>
         lucide.createIcons();
 
-        // Mouse Spotlight Glow Coordinator
-        document.addEventListener('mousemove', (e) => {
-            const x = (e.clientX / window.innerWidth) * 100;
-            const y = (e.clientY / window.innerHeight) * 100;
-            document.documentElement.style.setProperty('--mouse-x', `${x}%`);
-            document.documentElement.style.setProperty('--mouse-y', `${y}%`);
-        });
+        // Mouse Spotlight Glow Coordinator (only active above 768px for performance)
+        if (window.innerWidth > 768) {
+            document.addEventListener('mousemove', (e) => {
+                const x = (e.clientX / window.innerWidth) * 100;
+                const y = (e.clientY / window.innerHeight) * 100;
+                document.documentElement.style.setProperty('--mouse-x', `${x}%`);
+                document.documentElement.style.setProperty('--mouse-y', `${y}%`);
+            });
+        }
 
         // GSAP page load
         gsap.from(".fade-in", {
             opacity: 0,
-            y: 40,
-            duration: 1,
+            y: 30,
+            duration: 0.8,
             ease: "power3.out"
         });
     </script>

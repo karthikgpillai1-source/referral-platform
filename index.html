@@ -12,56 +12,77 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
     <style>
+        /* Cinematic Hero Section */
         .hero-section {
-            padding: 100px 0 60px;
+            min-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             text-align: center;
+            padding: var(--space-64) 0;
             position: relative;
+        }
+        .hero-logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font-accent);
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--primary);
+            margin-bottom: var(--space-24);
         }
         .hero-title {
             font-size: 64px;
-            font-weight: 800;
             line-height: 1.1;
-            margin-bottom: 24px;
-            letter-spacing: -0.03em;
+            margin-bottom: var(--space-24);
+            font-family: var(--font-heading);
             background: linear-gradient(135deg, #ffffff 40%, var(--primary) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
         .hero-subtitle {
-            font-size: 18px;
-            color: var(--text-muted);
+            font-size: 16px;
             max-width: 600px;
-            margin: 0 auto 36px;
+            color: var(--text-muted);
+            margin-bottom: var(--space-48);
             line-height: 1.6;
-            font-weight: 500;
         }
-        .stats-section {
-            background: var(--bg-secondary);
-            border-top: 1px solid var(--border-color);
-            border-bottom: 1px solid var(--border-color);
-            padding: 48px 0;
-            margin: 48px 0;
+        .hero-actions {
+            display: flex;
+            gap: 16px;
+            margin-bottom: var(--space-64);
+            flex-wrap: wrap;
+            justify-content: center;
         }
-        .stats-grid-landing {
+
+        /* Bento Stats in Hero Container */
+        .hero-stats-row {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 24px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--space-24);
+            width: 100%;
+            max-width: 900px;
+            border-top: 1px solid var(--border-color);
+            padding-top: var(--space-32);
+        }
+        .hero-stat-card {
             text-align: center;
         }
-        .stat-card-landing {
-            padding: 16px;
-        }
-        .stat-num-landing {
-            font-size: 40px;
+        .hero-stat-num {
+            font-size: 32px;
             font-weight: 800;
-            color: var(--primary);
             font-family: var(--font-mono);
-            margin-bottom: 8px;
+            color: var(--primary);
+            margin-bottom: 4px;
         }
-        .stat-lbl-landing {
-            font-size: 11px;
+        .hero-stat-lbl {
+            font-size: 10px;
             color: var(--text-muted);
-            font-weight: 700;
+            font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.1em;
         }
@@ -70,8 +91,8 @@
         .edu-section {
             display: flex;
             align-items: center;
-            gap: 64px;
-            margin: 80px 0;
+            gap: var(--space-64);
+            margin: var(--space-96) 0;
             text-align: left;
         }
         .edu-section.reverse {
@@ -96,22 +117,23 @@
         .edu-visual::after {
             content: '';
             position: absolute;
-            width: 140px;
-            height: 140px;
-            background: radial-gradient(circle, rgba(225, 29, 72, 0.1) 0%, transparent 70%);
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle, rgba(225, 29, 72, 0.08) 0%, transparent 70%);
             pointer-events: none;
         }
         .edu-title {
             font-size: 28px;
             font-weight: 800;
             color: #ffffff;
-            margin-bottom: 16px;
+            margin-bottom: var(--space-16);
+            font-family: var(--font-heading);
         }
         .edu-desc {
-            font-size: 15px;
+            font-size: 14px;
             color: var(--text-muted);
-            line-height: 1.7;
-            margin-bottom: 20px;
+            line-height: 1.6;
+            margin-bottom: var(--space-24);
         }
         .edu-list {
             list-style: none;
@@ -123,7 +145,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            font-size: 14px;
+            font-size: 13px;
             color: #ffffff;
         }
         .edu-list-item i {
@@ -131,60 +153,58 @@
             flex-shrink: 0;
         }
 
-        /* Visual Timeline */
+        /* Journey Progress Steps */
         .timeline-section {
             background: var(--bg-secondary);
             border-top: 1px solid var(--border-color);
             border-bottom: 1px solid var(--border-color);
-            padding: 64px 0;
-            margin: 80px 0;
+            padding: var(--space-64) 0;
+            margin: var(--space-96) 0;
         }
         .timeline-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
-            gap: 20px;
-            position: relative;
-            margin-top: 32px;
+            gap: var(--space-24);
+            margin-top: var(--space-48);
         }
         .timeline-node {
             text-align: center;
-            position: relative;
-            padding: 16px;
+            padding: var(--space-24);
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             border-radius: var(--border-radius-md);
             transition: var(--transition-smooth);
         }
         .timeline-node:hover {
-            border-color: rgba(225, 29, 72, 0.3);
+            border-color: rgba(225, 29, 72, 0.25);
             transform: translateY(-2px);
         }
         .timeline-step-num {
             font-family: var(--font-mono);
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 800;
             color: var(--primary);
-            margin-bottom: 8px;
+            margin-bottom: var(--space-8);
             text-transform: uppercase;
         }
         .timeline-step-title {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 700;
             color: #ffffff;
-            margin-bottom: 8px;
+            margin-bottom: var(--space-8);
         }
         .timeline-step-desc {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-muted);
             line-height: 1.5;
         }
 
-        /* Dedicated Inspirational Quotes Panel */
+        /* Rotating quotes panel */
         .quote-section {
             max-width: 800px;
-            margin: 80px auto;
+            margin: var(--space-96) auto;
             text-align: center;
-            padding: 48px;
+            padding: var(--space-48);
             background: radial-gradient(circle at center, rgba(225, 29, 72, 0.04) 0%, rgba(18, 18, 18, 0.8) 100%);
             border: 1px solid var(--border-color);
             border-radius: var(--border-radius-lg);
@@ -195,56 +215,27 @@
             color: var(--primary);
             opacity: 0.4;
             line-height: 1;
-            margin-bottom: 16px;
-            font-family: var(--font-serif);
+            margin-bottom: var(--space-16);
+            font-family: var(--font-heading);
         }
         .quote-text {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 500;
             color: #ffffff;
             line-height: 1.6;
-            min-height: 64px;
+            min-height: 56px;
             transition: opacity 0.5s ease;
         }
 
-        /* Leaderboard styling overrides */
-        .leaderboard-rank {
-            font-family: var(--font-mono);
-            color: var(--primary);
-            font-weight: 800;
-            font-size: 16px;
-            width: 40px;
-        }
-        .leaderboard-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 14px 20px;
-            background: rgba(255, 255, 255, 0.01);
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius-sm);
-            margin-bottom: 8px;
-            transition: var(--transition-smooth);
-        }
-        .leaderboard-item:hover {
-            border-color: rgba(225, 29, 72, 0.2);
-            transform: scale(1.005);
-        }
-
-        .cta-box {
-            background: linear-gradient(135deg, rgba(225, 29, 72, 0.06) 0%, rgba(18, 18, 18, 0.8) 100%);
-            border: 1px solid var(--border-color);
-            padding: 64px 32px;
-            border-radius: var(--border-radius-lg);
-            text-align: center;
-            margin: 80px 0;
-        }
-
         /* Responsive Layout Overrides */
-        @media (max-width: 900px) {
+        @media (max-width: 768px) {
+            .hero-stats-row {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
+            }
             .edu-section, .edu-section.reverse {
                 flex-direction: column;
-                gap: 32px;
+                gap: 24px;
                 text-align: center;
             }
             .edu-list-item {
@@ -277,28 +268,33 @@
 
     <main class="container">
         
-        <!-- Hero Section -->
+        <!-- Cinematic Hero Section -->
         <section class="hero-section fade-in">
-            <h1 class="hero-title">One Pledge.<br>One Drug-Free Future.</h1>
+            <div class="hero-logo">
+                <i data-lucide="shield" style="width: 14px; height: 14px;"></i> National Campaign Portal
+            </div>
+            <h1 class="hero-title">One Pledge. One Movement.<br>One Drug-Free Future.</h1>
             <p class="hero-subtitle">Together, we build a supportive community. Join the outreach, take the pledge, and nominate your peers to lead a healthy life.</p>
-            <a href="register.html" class="btn btn-primary btn-md" style="font-size: 15px; padding: 12px 30px;">
-                Take the Pledge <i data-lucide="chevron-right" style="width: 16px; height: 16px;"></i>
-            </a>
-        </section>
+            
+            <div class="hero-actions">
+                <a href="register.html" class="btn btn-primary btn-md">
+                    Take the Pledge <i data-lucide="chevron-right" style="width: 16px; height: 16px;"></i>
+                </a>
+                <a href="verify.html" class="btn btn-secondary btn-md">
+                    Verify Certificate <i data-lucide="search" style="width: 16px; height: 16px;"></i>
+                </a>
+            </div>
 
-        <!-- Dynamic Statistics Counters -->
-        <section class="stats-section">
-            <div class="container">
-                <div class="stats-grid-landing" id="campaign-stats-container">
-                    <!-- Statistics injected dynamically from campaign-data.js -->
-                </div>
+            <!-- Bento Stats counter embedded in hero -->
+            <div class="hero-stats-row" id="campaign-stats-container">
+                <!-- Injected dynamically from campaign-data.js -->
             </div>
         </section>
 
         <!-- Informative Educational Sections: Alternating Layouts -->
-        <section style="margin: 80px 0;">
+        <section style="margin: var(--space-48) 0;">
             
-            <!-- Section 1: Drug Abuse in India & Kerala (Left Content, Right Visual) -->
+            <!-- Section 1: Drug Abuse in India & Kerala -->
             <div class="edu-section fade-in">
                 <div class="edu-content">
                     <div style="display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;">
@@ -317,7 +313,7 @@
                 </div>
             </div>
 
-            <!-- Section 2: Impact on Students & Families (Right Content, Left Visual) -->
+            <!-- Section 2: Impact on Students & Families -->
             <div class="edu-section reverse fade-in">
                 <div class="edu-content">
                     <div style="display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;">
@@ -336,7 +332,7 @@
                 </div>
             </div>
 
-            <!-- Section 3: Mental Health & Socioeconomic Consequences (Left Content, Right Visual) -->
+            <!-- Section 3: Mental Health & Socioeconomic Consequences -->
             <div class="edu-section fade-in">
                 <div class="edu-content">
                     <div style="display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;">
@@ -355,7 +351,7 @@
                 </div>
             </div>
 
-            <!-- Section 4: Initiatives & Prevention (Right Content, Left Visual) -->
+            <!-- Section 4: Initiatives & Prevention -->
             <div class="edu-section reverse fade-in">
                 <div class="edu-content">
                     <div style="display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;">
@@ -374,7 +370,7 @@
                 </div>
             </div>
 
-            <!-- Section 5: How Youth Can Help (Left Content, Right Visual) -->
+            <!-- Section 5: How Youth Can Help -->
             <div class="edu-section fade-in">
                 <div class="edu-content">
                     <div style="display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;">
@@ -430,7 +426,7 @@
             </div>
         </section>
 
-        <!-- Dedicated Inspirational Quotes Panel -->
+        <!-- Rotating Inspirational Quotes Panel -->
         <section class="quote-section fade-in">
             <div class="quote-icon">“</div>
             <div class="quote-text" id="rotating-quote-text">
@@ -439,8 +435,8 @@
         </section>
 
         <!-- Campaign Leaderboard Section -->
-        <section class="leaderboard-section fade-in" style="margin-top: 80px;">
-            <h3 style="font-size: 22px; color: var(--primary); text-align: center; margin-bottom: 8px; font-weight: 800;">🏆 Campaign Outreach Leaders</h3>
+        <section class="leaderboard-section fade-in" style="margin-top: var(--space-64);">
+            <h3 style="font-size: 22px; color: var(--primary); text-align: center; margin-bottom: 8px; font-weight: 800; font-family: var(--font-heading);">Outreach Leaders</h3>
             <p style="text-align: center; margin-bottom: 32px; color: var(--text-muted);">Recognizing participants who have inspired the most peers to take the pledge.</p>
             
             <div id="leaderboard-loading" style="text-align: center; padding: 20px;">
@@ -457,9 +453,9 @@
         </section>
 
         <!-- Verification Redirect Form -->
-        <section class="flat-card fade-in" style="margin-top: 80px;">
-            <h3 style="font-size: 20px; color: #ffffff; margin-bottom: 8px; font-weight: 800; display: flex; align-items: center; gap: 8px;">
-                <i data-lucide="search" style="width: 20px; height: 20px; color: var(--primary);"></i> Verify Certificate
+        <section class="flat-card fade-in" style="margin-top: var(--space-64);">
+            <h3 style="font-size: 20px; color: #ffffff; margin-bottom: 8px; font-weight: 800; display: flex; align-items: center; gap: 8px; font-family: var(--font-heading);">
+                Verify Certificate
             </h3>
             <p style="margin-bottom: 24px; font-size: 14px; color: var(--text-muted);">Enter a certificate identifier to verify its validity and check the participant's commitment details.</p>
             <form id="landing-verify-form" style="display: flex; gap: 12px; flex-wrap: wrap;">
@@ -470,11 +466,11 @@
 
         <!-- Call to Action Box -->
         <section class="cta-box fade-in">
-            <h2 style="font-size: 36px; margin-bottom: 12px; font-weight: 800;">Ready to Join the Movement?</h2>
+            <h2 style="font-size: 36px; margin-bottom: 12px; font-weight: 800; font-family: var(--font-heading);">Ready to Join the Movement?</h2>
             <p style="font-size: 16px; color: var(--text-muted); margin-bottom: 32px; max-width: 500px; margin-left: auto; margin-right: auto;">
                 Take the pledge and stand for a healthier, drug-free future.
             </p>
-            <a href="register.html" class="btn btn-primary btn-md" style="font-size: 15px; padding: 12px 32px;">
+            <a href="register.html" class="btn btn-primary btn-md">
                 Take the Pledge
             </a>
         </section>
@@ -490,13 +486,15 @@
     <script>
         lucide.createIcons();
 
-        // Mouse Spotlight Glow Coordinator
-        document.addEventListener('mousemove', (e) => {
-            const x = (e.clientX / window.innerWidth) * 100;
-            const y = (e.clientY / window.innerHeight) * 100;
-            document.documentElement.style.setProperty('--mouse-x', `${x}%`);
-            document.documentElement.style.setProperty('--mouse-y', `${y}%`);
-        });
+        // Mouse Spotlight Glow Coordinator (only active above 768px for performance)
+        if (window.innerWidth > 768) {
+            document.addEventListener('mousemove', (e) => {
+                const x = (e.clientX / window.innerWidth) * 100;
+                const y = (e.clientY / window.innerHeight) * 100;
+                document.documentElement.style.setProperty('--mouse-x', `${x}%`);
+                document.documentElement.style.setProperty('--mouse-y', `${y}%`);
+            });
+        }
 
         // Initialize Lenis Smooth Scroll
         const lenis = new Lenis();
@@ -509,9 +507,9 @@
         // GSAP Scroll Animations
         gsap.from(".fade-in", {
             opacity: 0,
-            y: 40,
-            duration: 1,
-            stagger: 0.15,
+            y: 30,
+            duration: 0.8,
+            stagger: 0.1,
             ease: "power3.out"
         });
     </script>

@@ -16,35 +16,31 @@
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             border-radius: var(--border-radius-lg);
-            padding: 48px;
+            padding: var(--space-48);
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-            margin-top: 32px;
-        }
-        .pledge-word {
-            cursor: default;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            margin-top: var(--space-32);
         }
         .pledge-text-area {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 500;
             line-height: 1.6;
             text-align: left;
-            margin-bottom: 40px;
+            margin-bottom: var(--space-48);
             min-height: 120px;
             background: rgba(255, 255, 255, 0.01);
             border: 1px solid var(--border-color);
-            padding: 24px;
+            padding: var(--space-24);
             border-radius: var(--border-radius-md);
         }
         .checkbox-container {
             display: flex;
             gap: 16px;
             align-items: flex-start;
-            background: rgba(255, 255, 255, 0.02);
+            background: rgba(255, 255, 255, 0.01);
             border: 1px solid var(--border-color);
             padding: 16px 20px;
             border-radius: var(--border-radius-sm);
-            margin-bottom: 32px;
+            margin-bottom: var(--space-32);
             text-align: left;
             transition: var(--transition-smooth);
         }
@@ -67,12 +63,12 @@
     </header>
 
     <!-- Main Pledge Layout -->
-    <main class="container" style="max-width: 700px; padding: 0 24px; text-align: center;">
+    <main class="container" style="max-width: 700px; padding: 0 var(--space-24); text-align: center;">
         
         <!-- Loading State -->
         <div id="pledge-loading-card" style="padding: 80px 0;">
             <div class="spinner" style="margin: 0 auto;"></div>
-            <p style="margin-top: 24px; color: var(--text-muted); font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Preparing your pledge journey...</p>
+            <p style="margin-top: 24px; color: var(--text-muted); font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Preparing your pledge journey...</p>
         </div>
 
         <!-- Pledge Card -->
@@ -88,8 +84,8 @@
                 </div>
             </div>
 
-            <h2 id="pledge-title-lbl" style="font-size: 32px; margin-top: 16px; margin-bottom: 12px; font-weight: 800;">Anti-Drug Pledge</h2>
-            <p style="margin-bottom: 40px; font-size: 15px; color: var(--text-muted);">
+            <h2 id="pledge-title-lbl" style="font-size: 32px; margin-top: 16px; margin-bottom: 12px; font-weight: 800; font-family: var(--font-heading);">Anti-Drug Pledge</h2>
+            <p style="margin-bottom: 40px; font-size: 14px; color: var(--text-muted);">
                 Listen to the full narration of all three pledges sequentially to complete your campaign pledge.
             </p>
 
@@ -129,7 +125,7 @@
             </div>
 
             <!-- Non-blocking Voice Fallback Message -->
-            <div id="speech-info-msg" style="display: none; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); color: var(--text-muted); padding: 16px 20px; border-radius: var(--border-radius-sm); font-size: 13px; margin-bottom: 32px; text-align: left; line-height: 1.5;">
+            <div id="speech-info-msg" style="display: none; background: rgba(255, 255, 255, 0.01); border: 1px solid var(--border-color); color: var(--text-muted); padding: 16px 20px; border-radius: var(--border-radius-sm); font-size: 13px; margin-bottom: 32px; text-align: left; line-height: 1.5;">
                 <!-- Info notice injected here -->
             </div>
 
@@ -141,41 +137,41 @@
                 </label>
             </div>
 
-            <button id="pledge-btn" class="btn btn-primary btn-md" style="width: 100%; border-radius: var(--border-radius-sm);" disabled>
-                Continue to Next Step <i data-lucide="arrow-right" style="width: 18px; height: 18px;"></i>
+            <button id="pledge-btn" class="btn btn-primary btn-md" style="width: 100%;" disabled>
+                Continue to Next Step <i data-lucide="arrow-right" style="width: 16px; height: 16px;"></i>
             </button>
         </div>
 
         <!-- POST-PLEDGE REGISTRATION VIEW -->
         <div id="pledge-registration-card" class="pledge-card fade-in" style="display: none; text-align: left;">
-            <h2 style="font-size: 32px; margin-bottom: 12px; text-align: center; color: var(--primary); font-weight: 800;">Pledge Completed! 🎉</h2>
-            <p style="margin-bottom: 40px; font-size: 15px; text-align: center; color: var(--text-muted);">
+            <h2 style="font-size: 32px; margin-bottom: 12px; text-align: center; color: var(--primary); font-weight: 800; font-family: var(--font-heading);">Pledge Completed! 🎉</h2>
+            <p style="margin-bottom: 40px; font-size: 14px; text-align: center; color: var(--text-muted);">
                 Please complete your details to claim and issue your verified campaign achievement certificate.
             </p>
 
             <form id="post-pledge-registration-form">
                 
-                <div class="form-group">
-                    <label class="form-label" for="reg-name">Full Name</label>
-                    <input type="text" id="reg-name" class="form-control" readonly style="opacity: 0.6; background-color: rgba(255, 255, 255, 0.01);">
+                <div class="form-group-luxury">
+                    <input type="text" id="reg-name" class="form-control-luxury" placeholder=" " readonly style="opacity: 0.6;">
+                    <label class="form-label-luxury" for="reg-name">Full Name</label>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label" for="reg-whatsapp">WhatsApp Number *</label>
-                    <input type="tel" id="reg-whatsapp" class="form-control" placeholder="10-digit mobile number (e.g. 9876543210)" required>
+                <div class="form-group-luxury">
+                    <input type="tel" id="reg-whatsapp" class="form-control-luxury" placeholder=" " required>
+                    <label class="form-label-luxury" for="reg-whatsapp">WhatsApp Number *</label>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label" for="reg-email">Email Address *</label>
-                    <input type="email" id="reg-email" class="form-control" placeholder="name@example.com" required>
+                <div class="form-group-luxury">
+                    <input type="email" id="reg-email" class="form-control-luxury" placeholder=" " required>
+                    <label class="form-label-luxury" for="reg-email">Email Address *</label>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label" for="reg-college">College / Institution *</label>
-                    <input type="text" id="reg-college" class="form-control" placeholder="Name of your college/university" required>
+                <div class="form-group-luxury">
+                    <input type="text" id="reg-college" class="form-control-luxury" placeholder=" " required>
+                    <label class="form-label-luxury" for="reg-college">College / Institution *</label>
                 </div>
 
-                <button type="submit" class="btn btn-primary btn-md" style="width: 100%; margin-top: 24px; padding: 14px; font-size: 16px; border-radius: var(--border-radius-sm);">
+                <button type="submit" class="btn btn-primary btn-md" style="width: 100%; margin-top: 16px;">
                     Register & Generate Certificate <i data-lucide="award" style="width: 18px; height: 18px;"></i>
                 </button>
             </form>
@@ -192,19 +188,21 @@
     <script>
         lucide.createIcons();
 
-        // Mouse Spotlight Glow Coordinator
-        document.addEventListener('mousemove', (e) => {
-            const x = (e.clientX / window.innerWidth) * 100;
-            const y = (e.clientY / window.innerHeight) * 100;
-            document.documentElement.style.setProperty('--mouse-x', `${x}%`);
-            document.documentElement.style.setProperty('--mouse-y', `${y}%`);
-        });
+        // Mouse Spotlight Glow Coordinator (only active above 768px for performance)
+        if (window.innerWidth > 768) {
+            document.addEventListener('mousemove', (e) => {
+                const x = (e.clientX / window.innerWidth) * 100;
+                const y = (e.clientY / window.innerHeight) * 100;
+                document.documentElement.style.setProperty('--mouse-x', `${x}%`);
+                document.documentElement.style.setProperty('--mouse-y', `${y}%`);
+            });
+        }
 
         // GSAP page load
         gsap.from(".fade-in", {
             opacity: 0,
-            y: 40,
-            duration: 1,
+            y: 30,
+            duration: 0.8,
             ease: "power3.out"
         });
     </script>

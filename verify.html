@@ -93,12 +93,12 @@
     </header>
 
     <!-- Verification Section -->
-    <main class="container" style="max-width: 900px; padding: 0 24px; text-align: center;">
+    <main class="container" style="max-width: 900px; padding: 0 var(--space-24); text-align: center; margin-top: var(--space-32);">
         
         <!-- Loading State -->
         <div id="verify-loading" style="display: block; margin: 80px auto;">
             <div class="spinner" style="margin: 0 auto;"></div>
-            <p style="margin-top: 24px; color: var(--text-muted); font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Verifying credential authenticity...</p>
+            <p style="margin-top: 24px; color: var(--text-muted); font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Verifying credential authenticity...</p>
         </div>
 
         <!-- Success/Valid State -->
@@ -106,25 +106,25 @@
             
             <!-- 1. CONGRATULATIONS SCREEN -->
             <div class="congrats-header" id="celebration-banner" style="display: none;">
-                <h1 style="font-size: 40px; margin-bottom: 12px; font-weight: 800;">Congratulations, <span id="congrats-name" style="color:var(--primary);">Rahul</span>!</h1>
-                <p style="font-size: 16px; max-width: 600px; margin: 0 auto 32px; line-height:1.6; color: var(--text-muted);">
+                <h1 style="font-size: 36px; margin-bottom: 12px; font-weight: 800; font-family: var(--font-heading);">Congratulations, <span id="congrats-name" style="color:var(--primary);">Rahul</span>!</h1>
+                <p style="font-size: 15px; max-width: 600px; margin: 0 auto 32px; line-height:1.6; color: var(--text-muted);">
                     You are now officially part of the Youth Against Drugs Campaign. Your commitment is verified and recorded below.
                 </p>
 
                 <!-- Primary CTA Button: Share My Achievement -->
                 <div style="margin-bottom: 40px;">
-                    <button id="btn-share-achievement" class="btn btn-primary btn-md" style="padding: 14px 36px; font-size: 16px; min-width: 250px;">
+                    <button id="btn-share-achievement" class="btn btn-primary btn-md" style="min-width: 250px;">
                         <i data-lucide="share-2" style="width: 18px; height: 18px;"></i> Share My Achievement
                     </button>
                 </div>
             </div>
 
             <!-- 2. LARGE CERTIFICATE PREVIEW -->
-            <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(34, 197, 94, 0.1); border: 1px solid var(--success); color: var(--success); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 8px 18px; border-radius: 20px; margin-bottom: 32px;">
+            <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(34, 197, 94, 0.1); border: 1px solid var(--success); color: var(--success); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 6px 16px; border-radius: 20px; margin-bottom: 32px;">
                 <i data-lucide="check" style="width: 14px; height: 14px;"></i> Official Verified Campaign Certificate
             </div>
             
-            <div class="certificate-preview-container" data-tilt data-tilt-max="5" data-tilt-glare data-tilt-max-glare="0.1">
+            <div class="certificate-preview-container" id="cert-tilt-element">
                 <div class="certificate-canvas-wrapper" id="cert-pdf-target">
                     <!-- Fine Gold Border -->
                     <div class="certificate-inner-border"></div>
@@ -156,7 +156,7 @@
                         </div>
 
                         <div class="certificate-sign">
-                            <div style="font-size: 14px; font-weight: 700; color: #111827;">Campaign Board</div>
+                            <div style="font-size: 13px; font-weight: 700; color: #111827;">Campaign Board</div>
                             <div style="font-size: 11px; color: #4b5563; font-style: italic; margin-top: 2px;">Outreach Directorate</div>
                         </div>
                     </div>
@@ -191,7 +191,7 @@
 
             <!-- 4. REFERRAL QR SECTION -->
             <div class="qr-outreach-container" style="max-width: 650px; margin: 48px auto 0;">
-                <h3 style="font-size: 20px; color: var(--primary); margin-bottom: 8px; font-weight: 800;">Invite Others to Join the Movement</h3>
+                <h3 style="font-size: 20px; color: var(--primary); margin-bottom: 8px; font-weight: 800; font-family: var(--font-heading);">Invite Others to Join the Movement</h3>
                 <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">
                     Have your friends scan this QR code to register and take the pledge under your referral invitation.
                 </p>
@@ -204,7 +204,7 @@
         <!-- Failure State -->
         <div id="verify-failure-container" style="display: none; max-width: 500px; margin: 40px auto; text-align: left;" class="fade-in">
             <div style="font-size: 3rem; text-align: center; margin-bottom: 16px;">⚠️</div>
-            <h2 style="margin-bottom: 12px; color: var(--primary); font-size: 32px; text-align: center; font-weight: 800;">Verification Failed</h2>
+            <h2 style="margin-bottom: 12px; color: var(--primary); font-size: 32px; text-align: center; font-weight: 800; font-family: var(--font-heading);">Verification Failed</h2>
             <p style="margin-bottom: 32px; text-align: center; color: var(--text-muted);">The credential identifier could not be verified in our registry. Please check the ID code.</p>
 
             <form id="verify-search-form" class="flat-card">
@@ -228,13 +228,25 @@
         // Init Lucide
         lucide.createIcons();
 
-        // Mouse Spotlight Glow Coordinator
-        document.addEventListener('mousemove', (e) => {
-            const x = (e.clientX / window.innerWidth) * 100;
-            const y = (e.clientY / window.innerHeight) * 100;
-            document.documentElement.style.setProperty('--mouse-x', `${x}%`);
-            document.documentElement.style.setProperty('--mouse-y', `${y}%`);
-        });
+        // Mouse Spotlight Glow Coordinator (only active above 768px for performance)
+        if (window.innerWidth > 768) {
+            document.addEventListener('mousemove', (e) => {
+                const x = (e.clientX / window.innerWidth) * 100;
+                const y = (e.clientY / window.innerHeight) * 100;
+                document.documentElement.style.setProperty('--mouse-x', `${x}%`);
+                document.documentElement.style.setProperty('--mouse-y', `${y}%`);
+            });
+            // Init Vanilla Tilt
+            const tiltEl = document.getElementById('cert-tilt-element');
+            if (tiltEl) {
+                VanillaTilt.init(tiltEl, {
+                    max: 4,
+                    speed: 400,
+                    glare: true,
+                    "max-glare": 0.1
+                });
+            }
+        }
 
         // Initialize Lenis Smooth Scroll
         const lenis = new Lenis();
@@ -247,8 +259,8 @@
         // GSAP page load
         gsap.from(".fade-in", {
             opacity: 0,
-            y: 40,
-            duration: 1,
+            y: 30,
+            duration: 0.8,
             ease: "power3.out"
         });
 
@@ -262,7 +274,7 @@
                             particleCount: 150,
                             spread: 80,
                             origin: { y: 0.6 },
-                            colors: ['#E11D48', '#FF3B5C', '#ffffff']
+                            colors: ['#E11D48', '#FF355D', '#ffffff']
                         });
                         // Stop observing once triggered
                         observer.disconnect();
