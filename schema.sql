@@ -238,22 +238,22 @@ begin
 
     -- Delete in correct dependency order to satisfy FK constraints
     if delete_referrals then
-        delete from referrals;
+        delete from referrals where true;
         get diagnostics deleted_r_count = row_count;
     end if;
 
     if delete_certificates then
-        delete from certificates;
+        delete from certificates where true;
         get diagnostics deleted_c_count = row_count;
     end if;
 
     if delete_participants then
-        delete from participants;
+        delete from participants where true;
         get diagnostics deleted_p_count = row_count;
     end if;
 
     if delete_events then
-        delete from events;
+        delete from events where true;
         get diagnostics deleted_e_count = row_count;
     end if;
 
