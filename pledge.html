@@ -62,31 +62,23 @@
                 <div class="visualizer-node"></div>
             </div>
 
-            <div style="margin-bottom: 32px; display: flex; justify-content: center; gap: 12px;">
+            <!-- Voice Controls -->
+            <div id="voice-controls-section" style="margin-bottom: 24px; display: flex; justify-content: center; gap: 12px; align-items: center;">
                 <button id="btn-play-voice" class="btn btn-secondary btn-md">
-                    🔊 Play Narration
+                    ▶ Play
                 </button>
                 <button id="btn-stop-voice" class="btn btn-secondary btn-md">
                     ⏹ Stop
                 </button>
-                <button id="btn-restart-voice" class="btn btn-secondary btn-md">
-                    🔄 Restart
-                </button>
             </div>
 
-            <!-- Error Banner -->
-            <div id="speech-error-container" style="display: none; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.25); color: var(--danger); padding: 12px 16px; border-radius: var(--border-radius); font-size: 14px; margin-bottom: 24px; text-align: left;">
-                <div style="display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap;">
-                    <span>⚠️ Voice narration is unavailable on this device. You can continue by reading the pledge yourself.</span>
-                    <div style="display: flex; gap: 8px;">
-                        <button id="btn-replay-error" class="btn btn-secondary btn-sm" style="text-transform:none;">Replay</button>
-                        <button id="btn-retry-error" class="btn btn-primary btn-sm" style="text-transform:none;">Retry</button>
-                    </div>
-                </div>
+            <!-- Non-blocking Voice Fallback Message -->
+            <div id="speech-info-msg" style="display: none; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); color: var(--text-muted); padding: 12px 16px; border-radius: var(--border-radius); font-size: 13px; margin-bottom: 24px; text-align: left; line-height: 1.4;">
+                <!-- Info notice injected here -->
             </div>
 
             <!-- Acceptance Box -->
-            <div style="text-align: left; margin-bottom: 32px;">
+            <div style="text-align: left; margin-bottom: 24px;">
                 <div style="display: flex; gap: 12px; align-items: flex-start;">
                     <input type="checkbox" id="pledge-chk" style="width: 20px; height: 20px; accent-color: var(--primary); cursor: pointer; margin-top: 2px;">
                     <label for="pledge-chk" style="font-family: var(--font-dashboard); font-size: 14px; font-weight: 600; color: var(--text-muted); cursor: pointer; user-select: none; line-height: 1.4;">
@@ -98,27 +90,6 @@
             <button id="pledge-btn" class="btn btn-primary btn-md" style="width: 100%;" disabled>
                 Continue to Next Step ➡️
             </button>
-
-            <!-- Voice Status & Diagnostics -->
-            <div style="margin-top: 24px; display: flex; justify-content: space-between; flex-wrap: wrap; font-size: 13px; font-family: var(--font-dashboard); color: var(--text-muted); gap: 12px;">
-                <div id="diagnostic-voice">Voice: Detecting...</div>
-                <div id="playback-metrics" style="display: none;">
-                    Progress: <span id="playback-progress">0%</span> | Remaining: <span id="playback-remaining">0s</span>
-                </div>
-            </div>
-
-            <!-- Optional Developer Debug Panel -->
-            <div id="developer-debug-panel" style="display: none; text-align: left; background: #0f172a; border: 1px dashed rgba(16, 185, 129, 0.4); padding: 16px; border-radius: var(--border-radius); font-size: 12px; font-family: var(--font-mono); margin-top: 24px; color: var(--text-muted);">
-                <div style="font-weight: 700; color: var(--primary); margin-bottom: 8px; font-size: 13px;">🛠️ Developer Debug Panel</div>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px;">
-                    <div><strong>Provider:</strong> <span id="debug-provider">Detecting...</span></div>
-                    <div><strong>Voice:</strong> <span id="debug-voice">Detecting...</span></div>
-                    <div><strong>Speech State:</strong> <span id="debug-state">Detecting...</span></div>
-                    <div><strong>Remaining:</strong> <span id="debug-remaining">0s</span></div>
-                    <div><strong>Highlighted Word:</strong> <span id="debug-highlight">None</span></div>
-                    <div><strong>Total Words:</strong> <span id="debug-length">0 words</span></div>
-                </div>
-            </div>
         </div>
 
         <!-- POST-PLEDGE REGISTRATION VIEW -->
