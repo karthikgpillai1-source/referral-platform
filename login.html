@@ -6,8 +6,9 @@
     <title>Admin Login - Youth Against Drugs</title>
     <link rel="stylesheet" href="css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- Premium Icons & Animations CDN -->
+    <!-- Premium Icons CDN -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Animation Library CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 </head>
 <body>
@@ -23,10 +24,10 @@
     </header>
 
     <!-- Main Content Container -->
-    <main class="container" style="max-width: 480px; padding: 48px 24px;">
-        <div class="flat-card fade-in" style="padding: 40px 32px;">
-            <h2 style="font-size: 32px; text-align: center; margin-bottom: 8px; font-weight: 800; font-family: var(--font-heading);">Admin Login</h2>
-            <p style="text-align: center; margin-bottom: 32px; color: var(--text-muted); font-size: 14px;">
+    <main class="container" style="max-width: 440px; padding: 32px 16px;">
+        <div class="flat-card fade-in" style="padding: 32px 24px;">
+            <h2 style="font-size: 28px; text-align: center; margin-bottom: 8px; font-weight: 800; font-family: var(--font-heading);">Admin Login</h2>
+            <p style="text-align: center; margin-bottom: 24px; color: var(--text-muted); font-size: 13px;">
                 Authenticate with your campaign admin credentials to access the management dashboard.
             </p>
 
@@ -35,12 +36,12 @@
                     <input type="email" id="admin-email" class="form-control-luxury" placeholder=" " required>
                     <label class="form-label-luxury" for="admin-email">Email Address</label>
                 </div>
-                <div class="form-group-luxury" style="margin-bottom: 32px;">
+                <div class="form-group-luxury" style="margin-bottom: 24px;">
                     <input type="password" id="admin-password" class="form-control-luxury" placeholder=" " required>
                     <label class="form-label-luxury" for="admin-password">Password</label>
                 </div>
                 <button type="submit" class="btn btn-primary btn-md" style="width: 100%;">
-                    Sign In <i data-lucide="log-in" style="width: 18px; height: 18px;"></i>
+                    Sign In <i data-lucide="log-in" style="width: 16px; height: 16px;"></i>
                 </button>
             </form>
         </div>
@@ -51,26 +52,16 @@
         <p>© 2026 Youth Against Drugs Campaign</p>
     </footer>
 
-    <!-- Shared Microinteractions & Cursor spotlight script -->
+    <!-- Shared Microinteractions -->
     <script>
         lucide.createIcons();
-
-        // Mouse Spotlight Glow Coordinator (only active above 768px for performance)
-        if (window.innerWidth > 768) {
-            document.addEventListener('mousemove', (e) => {
-                const x = (e.clientX / window.innerWidth) * 100;
-                const y = (e.clientY / window.innerHeight) * 100;
-                document.documentElement.style.setProperty('--mouse-x', `${x}%`);
-                document.documentElement.style.setProperty('--mouse-y', `${y}%`);
-            });
-        }
 
         // GSAP page load
         gsap.from(".fade-in", {
             opacity: 0,
-            y: 30,
-            duration: 0.8,
-            ease: "power3.out"
+            y: 20,
+            duration: 0.6,
+            ease: "power2.out"
         });
     </script>
     <script type="module" src="js/pages/login.js?v=4"></script>

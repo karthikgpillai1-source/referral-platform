@@ -31,8 +31,19 @@ export const CertificateService = {
         }
     },
 
+    // Helper to dynamically load external script
+    loadScript(url) {
+        return new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = url;
+            script.onload = resolve;
+            script.onerror = reject;
+            document.head.appendChild(script);
+        });
+    },
+
     // Export certificate container to PDF
-    exportToPDF(elementId, filename = 'certificate.pdf') {
+    async exportToPDF(elementId, filename = 'certificate.pdf') {
         const element = document.getElementById(elementId);
         if (!element) {
             Utils.showToast('Certificate element not found for PDF export', 'error');
@@ -42,6 +53,11 @@ export const CertificateService = {
         Utils.showLoading(true);
 
         try {
+            if (!window.html2pdf) {
+                console.log('[Certificate Service] Dynamic loading of html2pdf...');
+                await this.loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js');
+            }
+
             if (window.html2pdf) {
                 const opt = {
                     margin: 0.2,

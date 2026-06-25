@@ -6,27 +6,27 @@
     <title>Campaign Dashboard - Youth Against Drugs</title>
     <link rel="stylesheet" href="css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- Premium Icons & Animations CDN -->
+    <!-- Premium Icons CDN -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Animation Library CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
     <style>
         .tab-btn {
             background: none;
             border: none;
             color: var(--text-muted);
-            padding: 14px 24px;
+            padding: 12px 18px;
             font-weight: 700;
             cursor: pointer;
             font-family: var(--font-sans);
-            font-size: 12px;
+            font-size: 11px;
             text-transform: uppercase;
             letter-spacing: 0.1em;
             transition: var(--transition-smooth);
             border-bottom: 2px solid transparent;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
         .tab-btn.active {
             color: var(--primary);
@@ -34,14 +34,6 @@
         }
         .tab-btn:hover {
             color: var(--primary-hover);
-        }
-        .dashboard-header-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 32px;
-            flex-wrap: wrap;
-            gap: 16px;
         }
     </style>
 </head>
@@ -56,34 +48,34 @@
             </div>
             <div class="nav-actions">
                 <button class="btn btn-secondary btn-sm" id="copy-campaign-link-btn" style="display: none;">
-                    <i data-lucide="link" style="width: 14px; height: 14px;"></i> Copy Registration Link
+                    <i data-lucide="link" style="width: 12px; height: 12px;"></i> Copy Link
                 </button>
                 <button class="btn btn-secondary btn-sm" id="logout-btn" style="display: none; background: rgba(225,29,72,0.1); border-color: rgba(225,29,72,0.2); color: var(--primary);">
-                    <i data-lucide="log-out" style="width: 14px; height: 14px;"></i> Log Out
+                    <i data-lucide="log-out" style="width: 12px; height: 12px;"></i> Log Out
                 </button>
             </div>
         </div>
     </header>
 
     <!-- Main Container -->
-    <main class="container fade-in" style="padding: 24px 0;">
+    <main class="container fade-in" style="padding: 16px 0;">
 
         <!-- Guard Loading State -->
-        <div id="auth-loading-state" style="display: block; text-align: center; padding: 80px 0;">
+        <div id="auth-loading-state" style="display: block; text-align: center; padding: 60px 0;">
             <div class="spinner"></div>
-            <p style="margin-top: 24px; color: var(--text-muted); font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Verifying session credentials...</p>
+            <p style="margin-top: 16px; color: var(--text-muted); font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Verifying session credentials...</p>
         </div>
 
         <!-- PROTECTED DASHBOARD CONTENT -->
         <div id="admin-dashboard-content" style="display: none;">
             
             <!-- Dashboard Navigation Tabs -->
-            <div style="display: flex; gap: 16px; border-bottom: 1px solid var(--border-color); margin-bottom: 32px;">
+            <div style="display: flex; gap: 8px; border-bottom: 1px solid var(--border-color); margin-bottom: 24px;">
                 <button class="tab-btn active" id="tab-dashboard">
-                    <i data-lucide="layout-dashboard" style="width: 16px; height: 16px;"></i> Overview
+                    <i data-lucide="layout-dashboard" style="width: 14px; height: 14px;"></i> Overview
                 </button>
                 <button class="tab-btn" id="tab-settings">
-                    <i data-lucide="settings" style="width: 16px; height: 16px;"></i> Settings & Danger Zone
+                    <i data-lucide="settings" style="width: 14px; height: 14px;"></i> Settings & Danger Zone
                 </button>
             </div>
 
@@ -92,64 +84,64 @@
                 <!-- Compact KPI Cards Grid -->
                 <div class="kpi-grid">
                     <div class="kpi-card">
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px;">
                             <span class="kpi-label">Registrations</span>
-                            <i data-lucide="users" style="width: 16px; height: 16px; color: var(--primary);"></i>
+                            <i data-lucide="users" style="width: 14px; height: 14px; color: var(--primary);"></i>
                         </div>
                         <div class="kpi-num" id="stat-registrations">0</div>
                     </div>
                     <div class="kpi-card">
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px;">
                             <span class="kpi-label">Certificates Issued</span>
-                            <i data-lucide="award" style="width: 16px; height: 16px; color: var(--primary);"></i>
+                            <i data-lucide="award" style="width: 14px; height: 14px; color: var(--primary);"></i>
                         </div>
                         <div class="kpi-num" id="stat-certificates">0</div>
                     </div>
                     <div class="kpi-card">
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px;">
                             <span class="kpi-label">Referrals Tracked</span>
-                            <i data-lucide="git-pull-request" style="width: 16px; height: 16px; color: var(--primary);"></i>
+                            <i data-lucide="git-pull-request" style="width: 14px; height: 14px; color: var(--primary);"></i>
                         </div>
                         <div class="kpi-num" id="stat-referrals">0</div>
                     </div>
                     <div class="kpi-card">
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px;">
                             <span class="kpi-label">Completed Pledges</span>
-                            <i data-lucide="check-square" style="width: 16px; height: 16px; color: var(--primary);"></i>
+                            <i data-lucide="check-square" style="width: 14px; height: 14px; color: var(--primary);"></i>
                         </div>
                         <div class="kpi-num" id="stat-pledges">0</div>
                     </div>
                 </div>
 
                 <!-- Campaign Link Generator (Bento Box style) -->
-                <div class="flat-card" style="margin-bottom: 48px;">
-                    <h3 style="font-size: 20px; color: #ffffff; margin-bottom: 8px; font-weight: 800; display: flex; align-items: center; gap: 8px; font-family: var(--font-heading);">
+                <div class="flat-card" style="margin-bottom: 32px;">
+                    <h3 style="font-size: 18px; color: #ffffff; margin-bottom: 8px; font-weight: 800; display: flex; align-items: center; gap: 8px; font-family: var(--font-heading);">
                         Generate Campaign Link
                     </h3>
-                    <p style="margin-bottom: 24px; font-size: 14px; color: var(--text-muted);">
+                    <p style="margin-bottom: 16px; font-size: 13px; color: var(--text-muted);">
                         Generate campaign-specific registration URLs with embedded query parameters for tracking campaign reach.
                     </p>
-                    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 16px;">
+                    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 12px;">
                         <div style="flex: 1; min-width: 250px;">
                             <input type="text" id="campaign-id-input" class="form-control" placeholder="Enter Campaign ID (e.g. drug-awareness-2026)">
                         </div>
                         <button class="btn btn-primary btn-md" id="btn-generate-campaign">Generate Link</button>
                     </div>
-                    <div id="campaign-output-container" style="display: none; align-items: center; gap: 12px; flex-wrap: wrap; background: rgba(255, 255, 255, 0.01); padding: 16px; border-radius: var(--border-radius-sm); border: 1px solid var(--border-color); margin-top: 16px;">
-                        <input type="text" id="campaign-link-output" class="form-control" readonly style="flex: 1; min-width: 250px; font-size: 14px;">
-                        <button class="btn btn-secondary btn-sm" id="btn-copy-campaign-output" style="white-space: nowrap;"><i data-lucide="copy" style="width: 14px; height: 14px;"></i> Copy</button>
-                        <a href="#" target="_blank" class="btn btn-primary btn-sm" id="btn-share-campaign-output" style="white-space: nowrap; background: #25D366; box-shadow: none;"><i data-lucide="message-circle" style="width: 14px; height: 14px;"></i> WhatsApp</a>
+                    <div id="campaign-output-container" style="display: none; align-items: center; gap: 12px; flex-wrap: wrap; background: rgba(255, 255, 255, 0.01); padding: 12px; border-radius: var(--border-radius-sm); border: 1px solid var(--border-color); margin-top: 12px;">
+                        <input type="text" id="campaign-link-output" class="form-control" readonly style="flex: 1; min-width: 250px; font-size: 13px;">
+                        <button class="btn btn-secondary btn-sm" id="btn-copy-campaign-output" style="white-space: nowrap;"><i data-lucide="copy" style="width: 12px; height: 12px;"></i> Copy</button>
+                        <a href="#" target="_blank" class="btn btn-primary btn-sm" id="btn-share-campaign-output" style="white-space: nowrap; background: #25D366; box-shadow: none;"><i data-lucide="message-circle" style="width: 12px; height: 12px;"></i> WhatsApp</a>
                     </div>
                 </div>
 
                 <!-- Bento grid wrapper for filters and tables -->
-                <div class="flat-card" style="padding: 24px;">
+                <div class="flat-card" style="padding: 16px;">
                     <!-- Clean Filters Toolbar -->
                     <div class="toolbar-clean">
                         <div class="toolbar-search-wrapper">
                             <input type="text" id="admin-search-input" class="form-control" placeholder="Search by name, email, college...">
                         </div>
-                        <div style="min-width: 200px;">
+                        <div style="min-width: 180px;">
                             <select id="admin-status-filter" class="form-control" style="cursor: pointer;">
                                 <option value="">All Registrations</option>
                                 <option value="pledge-completed">Pledge Completed</option>
@@ -159,7 +151,7 @@
                     </div>
 
                     <!-- Clean Table Container -->
-                    <div class="table-wrapper" style="margin-top: 16px;">
+                    <div class="table-wrapper" style="margin-top: 12px;">
                         <table>
                             <thead>
                                 <tr>
@@ -177,7 +169,7 @@
                         </table>
                     </div>
 
-                    <div id="admin-empty-state" style="display: none; text-align: center; padding: 48px; color: var(--text-muted); font-size: 15px;">
+                    <div id="admin-empty-state" style="display: none; text-align: center; padding: 32px; color: var(--text-muted); font-size: 14px;">
                         No registrations matched your search filter parameters.
                     </div>
                 </div>
@@ -188,14 +180,14 @@
                 
                 <!-- Credentials Section -->
                 <div class="flat-card">
-                    <h3 style="font-size: 20px; margin-bottom: 8px; color: #ffffff; font-weight: 800; display: flex; align-items: center; gap: 8px; font-family: var(--font-heading);">
+                    <h3 style="font-size: 18px; margin-bottom: 8px; color: #ffffff; font-weight: 800; display: flex; align-items: center; gap: 8px; font-family: var(--font-heading);">
                         Supabase Credentials
                     </h3>
-                    <p style="margin-bottom: 24px; font-size: 14px; color: var(--text-muted);">
+                    <p style="margin-bottom: 16px; font-size: 13px; color: var(--text-muted);">
                         Credentials saved here are used to sync data with your Supabase cloud instance.
                     </p>
                     <form id="settings-form">
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
                             <div class="form-group-luxury">
                                 <input type="text" id="setting-supabase-url" class="form-control-luxury" placeholder=" ">
                                 <label class="form-label-luxury" for="setting-supabase-url">Supabase API URL</label>
@@ -205,78 +197,78 @@
                                 <label class="form-label-luxury" for="setting-supabase-key">Supabase Public Anon Key</label>
                             </div>
                         </div>
-                        <div style="display: flex; gap: 12px; margin-top: 24px; justify-content: flex-end;">
-                            <button type="submit" class="btn btn-primary"><i data-lucide="save" style="width: 14px; height: 14px;"></i> Save Credentials</button>
+                        <div style="display: flex; gap: 12px; margin-top: 16px; justify-content: flex-end;">
+                            <button type="submit" class="btn btn-primary"><i data-lucide="save" style="width: 12px; height: 12px;"></i> Save Credentials</button>
                         </div>
                     </form>
                 </div>
 
                 <!-- Danger Zone Section -->
                 <div class="flat-card" style="border-color: rgba(225, 29, 72, 0.4); background: rgba(225, 29, 72, 0.01);">
-                    <h3 style="font-size: 20px; color: var(--primary); margin-bottom: 8px; font-weight: 800; display: flex; align-items: center; gap: 8px; font-family: var(--font-heading);">
+                    <h3 style="font-size: 18px; color: var(--primary); margin-bottom: 8px; font-weight: 800; display: flex; align-items: center; gap: 8px; font-family: var(--font-heading);">
                         Danger Zone
                     </h3>
-                    <p style="margin-bottom: 24px; color: var(--text-muted); font-size: 14px;">
+                    <p style="margin-bottom: 16px; color: var(--text-muted); font-size: 13px;">
                         This operation permanently removes participant-related campaign data. Application configuration, administrators, templates, and deployment will remain intact.
                     </p>
 
                     <!-- Reset Options Checkboxes -->
-                    <div style="text-align: left; background: rgba(255, 255, 255, 0.01); border: 1px solid var(--border-color); padding: 24px; border-radius: var(--border-radius-sm); margin-bottom: 32px;">
-                        <h4 style="margin-bottom: 20px; font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 800; letter-spacing: 0.1em;">Reset Parameters Configuration</h4>
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px;">
+                    <div style="text-align: left; background: rgba(255, 255, 255, 0.01); border: 1px solid var(--border-color); padding: 16px; border-radius: var(--border-radius-sm); margin-bottom: 24px;">
+                        <h4 style="margin-bottom: 16px; font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 800; letter-spacing: 0.1em;">Reset Parameters Configuration</h4>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px;">
                             
                             <label style="display: flex; gap: 12px; align-items: flex-start; cursor: pointer; user-select: none;">
                                 <input type="checkbox" id="reset-opt-participants" checked style="width: 18px; height: 18px; accent-color: var(--primary); margin-top: 3px;">
                                 <div>
-                                    <strong style="display: block; font-size: 14px; color: #ffffff;">Delete Participants</strong>
-                                    <span style="font-size: 12px; color: var(--text-muted);">Remove participant registry profile data.</span>
+                                    <strong style="display: block; font-size: 13px; color: #ffffff;">Delete Participants</strong>
+                                    <span style="font-size: 11px; color: var(--text-muted);">Remove participant registry profile data.</span>
                                 </div>
                             </label>
 
                             <label style="display: flex; gap: 12px; align-items: flex-start; cursor: pointer; user-select: none;">
                                 <input type="checkbox" id="reset-opt-referrals" checked style="width: 18px; height: 18px; accent-color: var(--primary); margin-top: 3px;">
                                 <div>
-                                    <strong style="display: block; font-size: 14px; color: #ffffff;">Delete Referrals</strong>
-                                    <span style="font-size: 12px; color: var(--text-muted);">Clear link relationships between users.</span>
+                                    <strong style="display: block; font-size: 13px; color: #ffffff;">Delete Referrals</strong>
+                                    <span style="font-size: 11px; color: var(--text-muted);">Clear link relationships between users.</span>
                                 </div>
                             </label>
 
                             <label style="display: flex; gap: 12px; align-items: flex-start; cursor: pointer; user-select: none;">
                                 <input type="checkbox" id="reset-opt-certificates" checked style="width: 18px; height: 18px; accent-color: var(--primary); margin-top: 3px;">
                                 <div>
-                                    <strong style="display: block; font-size: 14px; color: #ffffff;">Delete Certificates</strong>
-                                    <span style="font-size: 12px; color: var(--text-muted);">Remove generated PDF details and tracking.</span>
+                                    <strong style="display: block; font-size: 13px; color: #ffffff;">Delete Certificates</strong>
+                                    <span style="font-size: 11px; color: var(--text-muted);">Remove generated PDF details and tracking.</span>
                                 </div>
                             </label>
 
                             <label style="display: flex; gap: 12px; align-items: flex-start; cursor: pointer; user-select: none;">
                                 <input type="checkbox" id="reset-opt-events" style="width: 18px; height: 18px; accent-color: var(--primary); margin-top: 3px;">
                                 <div>
-                                    <strong style="display: block; font-size: 14px; color: #ffffff;">Delete Test Events</strong>
-                                    <span style="font-size: 12px; color: var(--text-muted);">Remove active campaigns (leaves defaults).</span>
+                                    <strong style="display: block; font-size: 13px; color: #ffffff;">Delete Test Events</strong>
+                                    <span style="font-size: 11px; color: var(--text-muted);">Remove active campaigns (leaves defaults).</span>
                                 </div>
                             </label>
 
                             <label style="display: flex; gap: 12px; align-items: flex-start; cursor: pointer; user-select: none;">
                                 <input type="checkbox" id="reset-opt-ref-seq" checked style="width: 18px; height: 18px; accent-color: var(--primary); margin-top: 3px;">
                                 <div>
-                                    <strong style="display: block; font-size: 14px; color: #ffffff;">Reset Referral Sequence</strong>
-                                    <span style="font-size: 12px; color: var(--text-muted);">Restarts numbering from REF0001.</span>
+                                    <strong style="display: block; font-size: 13px; color: #ffffff;">Reset Referral Sequence</strong>
+                                    <span style="font-size: 11px; color: var(--text-muted);">Restarts numbering from REF0001.</span>
                                 </div>
                             </label>
 
                             <label style="display: flex; gap: 12px; align-items: flex-start; cursor: pointer; user-select: none;">
                                 <input type="checkbox" id="reset-opt-cert-seq" checked style="width: 18px; height: 18px; accent-color: var(--primary); margin-top: 3px;">
                                 <div>
-                                    <strong style="display: block; font-size: 14px; color: #ffffff;">Reset Certificate Sequence</strong>
-                                    <span style="font-size: 12px; color: var(--text-muted);">Restarts number from CERT-2026-000001.</span>
+                                    <strong style="display: block; font-size: 13px; color: #ffffff;">Reset Certificate Sequence</strong>
+                                    <span style="font-size: 11px; color: var(--text-muted);">Restarts number from CERT-2026-000001.</span>
                                 </div>
                             </label>
                         </div>
                     </div>
 
                     <div style="display: flex; justify-content: flex-end;">
-                        <button type="button" class="btn btn-primary" id="btn-trigger-reset" style="background: var(--primary);"><i data-lucide="trash-2" style="width: 14px; height: 14px;"></i> Launch Reset... ⚡</button>
+                        <button type="button" class="btn btn-primary" id="btn-trigger-reset" style="background: var(--primary);"><i data-lucide="trash-2" style="width: 12px; height: 12px;"></i> Launch Reset... ⚡</button>
                     </div>
                 </div>
             </div>
@@ -286,17 +278,17 @@
     </main>
 
     <!-- SECURITY MODAL 1: RE-AUTHENTICATION -->
-    <div id="modal-auth" style="display: none; position: fixed; inset: 0; background: rgba(5,5,5,0.9); z-index: 1000; align-items: center; justify-content: center; padding: 24px; backdrop-filter: blur(8px);">
-        <div class="flat-card" style="width: 100%; max-width: 450px; padding: 32px; box-shadow: 0 20px 40px rgba(0,0,0,0.6);">
-            <h3 style="font-size: 20px; color: #ffffff; margin-bottom: 8px; font-weight: 800; font-family: var(--font-heading);">Re-authenticate Required</h3>
-            <p style="font-size: 14px; margin-bottom: 24px; color: var(--text-muted);">Please re-enter your administrator password to proceed with this destructive operation.</p>
+    <div id="modal-auth" style="display: none; position: fixed; inset: 0; background: rgba(5,5,5,0.9); z-index: 1000; align-items: center; justify-content: center; padding: 24px; backdrop-filter: blur(4px);">
+        <div class="flat-card" style="width: 100%; max-width: 400px; padding: 24px; box-shadow: 0 10px 24px rgba(0,0,0,0.6);">
+            <h3 style="font-size: 18px; color: #ffffff; margin-bottom: 8px; font-weight: 800;">Re-authenticate Required</h3>
+            <p style="font-size: 13px; margin-bottom: 16px; color: var(--text-muted);">Please re-enter your administrator password to proceed with this destructive operation.</p>
             
             <div class="form-group-luxury">
                 <input type="password" id="auth-password" class="form-control-luxury" placeholder=" " required>
                 <label class="form-label-luxury" for="auth-password">Password</label>
             </div>
             
-            <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 32px;">
+            <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
                 <button type="button" class="btn btn-secondary btn-sm" id="btn-auth-cancel">Cancel</button>
                 <button type="button" class="btn btn-primary btn-sm" id="btn-auth-confirm">Verify Password</button>
             </div>
@@ -305,12 +297,12 @@
 
     <!-- SECURITY MODAL 2: CONFIRMATION & TEXT TYPING -->
     <div id="modal-confirm" style="display: none; position: fixed; inset: 0; background: rgba(5,5,5,0.9); z-index: 1000; align-items: center; justify-content: center; padding: 24px; backdrop-filter: blur(8px);">
-        <div class="flat-card" style="border-color: var(--primary); width: 100%; max-width: 500px; padding: 32px; box-shadow: 0 20px 40px rgba(0,0,0,0.6);">
-            <h3 style="font-size: 22px; color: var(--primary); margin-bottom: 8px; font-weight: 800; font-family: var(--font-heading);">Confirm Destructive Reset</h3>
-            <p style="font-size: 14px; color: #ffffff; margin-bottom: 16px;">
+        <div class="flat-card" style="border-color: var(--primary); width: 100%; max-width: 450px; padding: 24px; box-shadow: 0 10px 24px rgba(0,0,0,0.6);">
+            <h3 style="font-size: 20px; color: var(--primary); margin-bottom: 8px; font-weight: 800; font-family: var(--font-heading);">Confirm Destructive Reset</h3>
+            <p style="font-size: 13px; color: #ffffff; margin-bottom: 12px;">
                 This will delete <strong id="reset-p-count" style="color: var(--primary);">0</strong> participant registries, <strong id="reset-r-count" style="color: var(--primary);">0</strong> referral lines, and <strong id="reset-c-count" style="color: var(--primary);">0</strong> certificate mappings.
             </p>
-            <p style="font-size: 13px; color: var(--text-muted); background: rgba(255, 255, 255, 0.01); padding: 16px; border-radius: var(--border-radius-sm); border: 1px solid var(--border-color); margin-bottom: 24px; line-height: 1.5;">
+            <p style="font-size: 12px; color: var(--text-muted); background: rgba(255, 255, 255, 0.01); padding: 12px; border-radius: var(--border-radius-sm); border: 1px solid var(--border-color); margin-bottom: 16px; line-height: 1.4;">
                 <strong>Automatic Backup:</strong> A JSON file backup of all data will be compiled and automatically downloaded before deletion starts. If this export fails, the reset action will abort.
             </p>
 
@@ -319,7 +311,7 @@
                 <label class="form-label-luxury" for="confirm-text-input" style="width: 100%; text-align: center; left: 0;">Type RESET PLATFORM to confirm</label>
             </div>
 
-            <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 32px;">
+            <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
                 <button type="button" class="btn btn-secondary btn-sm" id="btn-confirm-cancel">Cancel</button>
                 <button type="button" class="btn btn-primary btn-sm" id="btn-confirm-reset" disabled style="background: var(--primary);">Confirm Destructive Reset 💥</button>
             </div>
@@ -331,35 +323,17 @@
         <p>© 2026 Youth Against Drugs Campaign</p>
     </footer>
 
-    <!-- Shared Microinteractions & Cursor spotlight script -->
+    <!-- Shared Microinteractions -->
     <script>
         // Init Lucide
         lucide.createIcons();
 
-        // Mouse Spotlight Glow Coordinator (only active above 768px for performance)
-        if (window.innerWidth > 768) {
-            document.addEventListener('mousemove', (e) => {
-                const x = (e.clientX / window.innerWidth) * 100;
-                const y = (e.clientY / window.innerHeight) * 100;
-                document.documentElement.style.setProperty('--mouse-x', `${x}%`);
-                document.documentElement.style.setProperty('--mouse-y', `${y}%`);
-            });
-        }
-
-        // Initialize Lenis Smooth Scroll
-        const lenis = new Lenis();
-        function raf(time) {
-            lenis.raf(time);
-            requestAnimationFrame(raf);
-        }
-        requestAnimationFrame(raf);
-
         // GSAP page load
         gsap.from(".fade-in", {
             opacity: 0,
-            y: 30,
-            duration: 0.8,
-            ease: "power3.out"
+            y: 20,
+            duration: 0.6,
+            ease: "power2.out"
         });
 
         // Tab transitions
@@ -374,17 +348,15 @@
                 settingsTab.classList.remove('active');
                 overviewContainer.style.display = 'block';
                 settingsContainer.style.display = 'none';
-                gsap.from(overviewContainer, { opacity: 0, y: 15, duration: 0.4 });
             });
             settingsTab.addEventListener('click', () => {
                 settingsTab.classList.add('active');
                 dashboardTab.classList.remove('active');
                 settingsContainer.style.display = 'block';
                 overviewContainer.style.display = 'none';
-                gsap.from(settingsContainer, { opacity: 0, y: 15, duration: 0.4 });
-            });
         }
     </script>
+    <script type="module" src="js/performance.js"></script>
     <script type="module" src="js/pages/dashboard.js?v=4"></script>
 </body>
 </html>

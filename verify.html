@@ -6,77 +6,74 @@
     <title>Certificate Verification - Youth Against Drugs</title>
     <link rel="stylesheet" href="css/style.css">
     
-    <!-- Dependencies for PDF, QR, Confetti, Tilt -->
+    <!-- Dependencies for PDF, QR, Confetti -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js"></script>
     
     <!-- Premium Icons & Animations CDN -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
     
     <style>
         .share-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
             gap: 12px;
-            margin: 24px 0;
+            margin: 16px 0;
         }
         .share-btn {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
-            padding: 12px;
+            padding: 10px;
             border-radius: var(--border-radius-sm);
             font-size: 13px;
             font-weight: 600;
             cursor: pointer;
             text-decoration: none;
             color: #ffffff;
-            transition: var(--transition-spring);
+            transition: var(--transition-smooth);
             border: none;
         }
         .share-btn-wa { background-color: #25D366; }
-        .share-btn-wa:hover { background-color: #20ba5a; transform: translateY(-2px); }
+        .share-btn-wa:hover { background-color: #20ba5a; }
         .share-btn-fb { background-color: #1877F2; }
-        .share-btn-fb:hover { background-color: #166fe5; transform: translateY(-2px); }
+        .share-btn-fb:hover { background-color: #166fe5; }
         .share-btn-x { background-color: #000000; border: 1px solid #333333; }
-        .share-btn-x:hover { background-color: #111111; border-color: #555555; transform: translateY(-2px); }
+        .share-btn-x:hover { background-color: #111111; }
         .share-btn-tg { background-color: #0088cc; }
-        .share-btn-tg:hover { background-color: #0077b5; transform: translateY(-2px); }
+        .share-btn-tg:hover { background-color: #0077b5; }
         .share-btn-email { background-color: #ea4335; }
-        .share-btn-email:hover { background-color: #d93025; transform: translateY(-2px); }
+        .share-btn-email:hover { background-color: #d93025; }
         .share-btn-copy { background-color: #374151; }
-        .share-btn-copy:hover { background-color: #4b5563; transform: translateY(-2px); }
+        .share-btn-copy:hover { background-color: #4b5563; }
 
         .congrats-header {
-            margin-bottom: 32px;
+            margin-bottom: 24px;
         }
         
         .qr-outreach-container {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             border-radius: var(--border-radius-md);
-            padding: 32px;
-            margin-top: 48px;
+            padding: 24px;
+            margin-top: 32px;
             text-align: center;
         }
 
         .ref-qr-wrapper {
             background: #ffffff;
-            padding: 16px;
+            padding: 12px;
             border-radius: var(--border-radius-md);
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 160px;
-            height: 160px;
-            margin: 24px 0;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            width: 144px;
+            height: 144px;
+            margin: 16px 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
         }
     </style>
 </head>
@@ -93,12 +90,12 @@
     </header>
 
     <!-- Verification Section -->
-    <main class="container" style="max-width: 900px; padding: 0 var(--space-24); text-align: center; margin-top: var(--space-32);">
+    <main class="container" style="max-width: 900px; padding: 0 var(--space-16); text-align: center; margin-top: var(--space-24);">
         
         <!-- Loading State -->
-        <div id="verify-loading" style="display: block; margin: 80px auto;">
+        <div id="verify-loading" style="display: block; margin: 60px auto;">
             <div class="spinner" style="margin: 0 auto;"></div>
-            <p style="margin-top: 24px; color: var(--text-muted); font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Verifying credential authenticity...</p>
+            <p style="margin-top: 16px; color: var(--text-muted); font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Verifying credential authenticity...</p>
         </div>
 
         <!-- Success/Valid State -->
@@ -106,25 +103,25 @@
             
             <!-- 1. CONGRATULATIONS SCREEN -->
             <div class="congrats-header" id="celebration-banner" style="display: none;">
-                <h1 style="font-size: 36px; margin-bottom: 12px; font-weight: 800; font-family: var(--font-heading);">Congratulations, <span id="congrats-name" style="color:var(--primary);">Rahul</span>!</h1>
-                <p style="font-size: 15px; max-width: 600px; margin: 0 auto 32px; line-height:1.6; color: var(--text-muted);">
+                <h1 style="font-size: 32px; margin-bottom: 8px; font-weight: 800; font-family: var(--font-heading);">Congratulations, <span id="congrats-name" style="color:var(--primary);">Rahul</span>!</h1>
+                <p style="font-size: 14px; max-width: 600px; margin: 0 auto 24px; line-height:1.5; color: var(--text-muted);">
                     You are now officially part of the Youth Against Drugs Campaign. Your commitment is verified and recorded below.
                 </p>
 
                 <!-- Primary CTA Button: Share My Achievement -->
-                <div style="margin-bottom: 40px;">
+                <div style="margin-bottom: 24px;">
                     <button id="btn-share-achievement" class="btn btn-primary btn-md" style="min-width: 250px;">
-                        <i data-lucide="share-2" style="width: 18px; height: 18px;"></i> Share My Achievement
+                        <i data-lucide="share-2" style="width: 16px; height: 16px;"></i> Share My Achievement
                     </button>
                 </div>
             </div>
 
             <!-- 2. LARGE CERTIFICATE PREVIEW -->
-            <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(34, 197, 94, 0.1); border: 1px solid var(--success); color: var(--success); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 6px 16px; border-radius: 20px; margin-bottom: 32px;">
-                <i data-lucide="check" style="width: 14px; height: 14px;"></i> Official Verified Campaign Certificate
+            <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(34, 197, 94, 0.1); border: 1px solid var(--success); color: var(--success); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 4px 12px; border-radius: 20px; margin-bottom: 24px;">
+                <i data-lucide="check" style="width: 12px; height: 12px;"></i> Official Verified Campaign Certificate
             </div>
             
-            <div class="certificate-preview-container" id="cert-tilt-element">
+            <div class="certificate-preview-container">
                 <div class="certificate-canvas-wrapper" id="cert-pdf-target">
                     <!-- Fine Gold Border -->
                     <div class="certificate-inner-border"></div>
@@ -164,35 +161,35 @@
             </div>
 
             <!-- 3. SOCIAL SHARE PANEL (Directly below certificate preview) -->
-            <div style="max-width: 650px; margin: 40px auto 0;" id="cert-sharing-panel">
-                <h4 style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 800; letter-spacing: 0.1em; margin-bottom: 16px; text-align: center;">Share Certificate & Invitation</h4>
+            <div style="max-width: 650px; margin: 32px auto 0;" id="cert-sharing-panel">
+                <h4 style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 800; letter-spacing: 0.1em; margin-bottom: 12px; text-align: center;">Share Certificate & Invitation</h4>
                 <div class="share-grid">
-                    <a href="#" id="share-cert-wa" target="_blank" class="share-btn share-btn-wa"><i data-lucide="message-circle" style="width: 16px; height: 16px;"></i> WhatsApp</a>
-                    <a href="#" id="share-cert-tg" target="_blank" class="share-btn share-btn-tg"><i data-lucide="send" style="width: 16px; height: 16px;"></i> Telegram</a>
-                    <a href="#" id="share-cert-fb" target="_blank" class="share-btn share-btn-fb"><i data-lucide="facebook" style="width: 16px; height: 16px;"></i> Facebook</a>
-                    <a href="#" id="share-cert-x" target="_blank" class="share-btn share-btn-x"><i data-lucide="twitter" style="width: 16px; height: 16px;"></i> X</a>
-                    <a href="#" id="share-cert-email" target="_blank" class="share-btn share-btn-email"><i data-lucide="mail" style="width: 16px; height: 16px;"></i> Email</a>
-                    <button id="btn-copy-share-text" class="share-btn share-btn-copy"><i data-lucide="copy" style="width: 16px; height: 16px;"></i> Copy Text</button>
+                    <a href="#" id="share-cert-wa" target="_blank" class="share-btn share-btn-wa"><i data-lucide="message-circle" style="width: 14px; height: 14px;"></i> WhatsApp</a>
+                    <a href="#" id="share-cert-tg" target="_blank" class="share-btn share-btn-tg"><i data-lucide="send" style="width: 14px; height: 14px;"></i> Telegram</a>
+                    <a href="#" id="share-cert-fb" target="_blank" class="share-btn share-btn-fb"><i data-lucide="facebook" style="width: 14px; height: 14px;"></i> Facebook</a>
+                    <a href="#" id="share-cert-x" target="_blank" class="share-btn share-btn-x"><i data-lucide="twitter" style="width: 14px; height: 14px;"></i> X</a>
+                    <a href="#" id="share-cert-email" target="_blank" class="share-btn share-btn-email"><i data-lucide="mail" style="width: 14px; height: 14px;"></i> Email</a>
+                    <button id="btn-copy-share-text" class="share-btn share-btn-copy"><i data-lucide="copy" style="width: 14px; height: 14px;"></i> Copy Text</button>
                 </div>
             </div>
 
             <!-- Additional actions -->
-            <div style="margin-top: 32px; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
+            <div style="margin-top: 24px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
                 <button id="download-pdf-btn" class="btn btn-secondary btn-sm">
-                    <i data-lucide="download" style="width: 14px; height: 14px;"></i> Download PDF Certificate
+                    <i data-lucide="download" style="width: 12px; height: 12px;"></i> Download PDF
                 </button>
                 <button id="copy-cert-link-btn" class="btn btn-secondary btn-sm">
-                    <i data-lucide="link-2" style="width: 14px; height: 14px;"></i> Copy Certificate Link
+                    <i data-lucide="link-2" style="width: 12px; height: 12px;"></i> Copy Cert Link
                 </button>
                 <button id="copy-ref-link-btn" class="btn btn-secondary btn-sm">
-                    <i data-lucide="user-plus" style="width: 14px; height: 14px;"></i> Copy Referral Link
+                    <i data-lucide="user-plus" style="width: 12px; height: 12px;"></i> Copy Ref Link
                 </button>
             </div>
 
             <!-- 4. REFERRAL QR SECTION -->
-            <div class="qr-outreach-container" style="max-width: 650px; margin: 48px auto 0;">
-                <h3 style="font-size: 20px; color: var(--primary); margin-bottom: 8px; font-weight: 800; font-family: var(--font-heading);">Invite Others to Join the Movement</h3>
-                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">
+            <div class="qr-outreach-container" style="max-width: 650px; margin: 32px auto 0;">
+                <h3 style="font-size: 18px; color: var(--primary); margin-bottom: 6px; font-weight: 800; font-family: var(--font-heading);">Invite Others to Join the Movement</h3>
+                <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">
                     Have your friends scan this QR code to register and take the pledge under your referral invitation.
                 </p>
                 <div class="ref-qr-wrapper" id="referral-qr-container">
@@ -202,10 +199,10 @@
         </div>
 
         <!-- Failure State -->
-        <div id="verify-failure-container" style="display: none; max-width: 500px; margin: 40px auto; text-align: left;" class="fade-in">
-            <div style="font-size: 3rem; text-align: center; margin-bottom: 16px;">⚠️</div>
-            <h2 style="margin-bottom: 12px; color: var(--primary); font-size: 32px; text-align: center; font-weight: 800; font-family: var(--font-heading);">Verification Failed</h2>
-            <p style="margin-bottom: 32px; text-align: center; color: var(--text-muted);">The credential identifier could not be verified in our registry. Please check the ID code.</p>
+        <div id="verify-failure-container" style="display: none; max-width: 500px; margin: 32px auto; text-align: left;" class="fade-in">
+            <div style="font-size: 2.5rem; text-align: center; margin-bottom: 12px;">⚠️</div>
+            <h2 style="margin-bottom: 8px; color: var(--primary); font-size: 28px; text-align: center; font-weight: 800; font-family: var(--font-heading);">Verification Failed</h2>
+            <p style="margin-bottom: 24px; text-align: center; color: var(--text-muted); font-size: 13px;">The credential identifier could not be verified in our registry. Please check the ID code.</p>
 
             <form id="verify-search-form" class="flat-card">
                 <div class="form-group">
@@ -223,46 +220,9 @@
         <p>© 2026 Youth Against Drugs Campaign</p>
     </footer>
 
-    <!-- Shared Microinteractions & Cursor spotlight script -->
+    <!-- Shared Microinteractions -->
     <script>
-        // Init Lucide
         lucide.createIcons();
-
-        // Mouse Spotlight Glow Coordinator (only active above 768px for performance)
-        if (window.innerWidth > 768) {
-            document.addEventListener('mousemove', (e) => {
-                const x = (e.clientX / window.innerWidth) * 100;
-                const y = (e.clientY / window.innerHeight) * 100;
-                document.documentElement.style.setProperty('--mouse-x', `${x}%`);
-                document.documentElement.style.setProperty('--mouse-y', `${y}%`);
-            });
-            // Init Vanilla Tilt
-            const tiltEl = document.getElementById('cert-tilt-element');
-            if (tiltEl) {
-                VanillaTilt.init(tiltEl, {
-                    max: 4,
-                    speed: 400,
-                    glare: true,
-                    "max-glare": 0.1
-                });
-            }
-        }
-
-        // Initialize Lenis Smooth Scroll
-        const lenis = new Lenis();
-        function raf(time) {
-            lenis.raf(time);
-            requestAnimationFrame(raf);
-        }
-        requestAnimationFrame(raf);
-
-        // GSAP page load
-        gsap.from(".fade-in", {
-            opacity: 0,
-            y: 30,
-            duration: 0.8,
-            ease: "power3.out"
-        });
 
         // Run Confetti on success reveal if celebration banner is shown
         const observer = new MutationObserver((mutations) => {
@@ -271,12 +231,11 @@
                     const banner = document.getElementById('celebration-banner');
                     if (banner && banner.style.display !== 'none') {
                         confetti({
-                            particleCount: 150,
-                            spread: 80,
+                            particleCount: 120,
+                            spread: 60,
                             origin: { y: 0.6 },
                             colors: ['#E11D48', '#FF355D', '#ffffff']
                         });
-                        // Stop observing once triggered
                         observer.disconnect();
                     }
                 }
@@ -288,6 +247,7 @@
             observer.observe(successContainer, { attributes: true });
         }
     </script>
+    <script type="module" src="js/performance.js"></script>
     <script type="module" src="js/pages/verify.js?v=6"></script>
 </body>
 </html>

@@ -12,6 +12,7 @@ let utterance = null;
 const synth = window.speechSynthesis;
 let isReading = false;
 let selectedVoice = null;
+let cachedWordSpans = [];
 
 // Sliced playback state variables to fallback from buggy native pause/resume
 let lastBoundaryCharIndex = 0;
@@ -183,6 +184,7 @@ function loadStep(step) {
     const textContainer = document.getElementById('pledge-text-container');
     if (textContainer) {
         textContainer.innerHTML = words.map((w, idx) => `<span class="pledge-word" id="word-${idx}">${w}</span>`).join(' ');
+        cachedWordSpans = Array.from(textContainer.querySelectorAll('.pledge-word'));
     }
 
     // Setup speech synthesis
@@ -517,7 +519,7 @@ function cleanupUtterance() {
 }
 
 function clearWordHighlights() {
-    document.querySelectorAll('.pledge-word').forEach(span => span.classList.remove('active'));
+    cachedWordSpans.forEach(span => span.classList.remove('active'));
 }
 
 function startVisualizer() {
