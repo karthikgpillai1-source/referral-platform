@@ -37,13 +37,23 @@
                     <input type="email" id="admin-email" class="form-control-luxury" placeholder=" " required>
                     <label class="form-label-luxury" for="admin-email">Email Address</label>
                 </div>
-                <div class="form-group-luxury" style="margin-bottom: 24px;">
+                <div class="form-group-luxury">
                     <input type="password" id="admin-password" class="form-control-luxury" placeholder=" " required>
                     <label class="form-label-luxury" for="admin-password">Password</label>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px; margin-bottom: 24px; font-size: 12px;">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--text-muted); user-select: none;">
+                        <input type="checkbox" id="admin-remember" style="accent-color: var(--primary); cursor: pointer;"> Remember Me
+                    </label>
+                    <a href="#" onclick="alert('Please contact the main campaign administrator to reset your credentials.'); return false;" style="color: var(--primary); text-decoration: none; font-weight: 500; transition: var(--transition-smooth);" onmouseover="this.style.color='var(--primary-hover)'" onmouseout="this.style.color='var(--primary)'">Forgot Password?</a>
                 </div>
                 <button type="submit" class="btn btn-primary btn-md" style="width: 100%;">
                     Sign In <i data-lucide="log-in" style="width: 16px; height: 16px;"></i>
                 </button>
+                <p style="text-align: center; margin-top: 16px; font-size: 11px; color: var(--text-muted); display: flex; align-items: center; justify-content: center; gap: 4px;">
+                    <i data-lucide="shield-alert" style="width: 12px; height: 12px; color: var(--primary); flex-shrink: 0;"></i>
+                    Authorized personnel only. All access attempts are logged.
+                </p>
             </form>
         </div>
     </main>
