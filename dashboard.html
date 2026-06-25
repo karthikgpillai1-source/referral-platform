@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campaign Dashboard - Youth Against Drugs</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+    <!-- SaaS Dashboard Header -->
+    <header>
+        <div class="container navbar">
+            <div class="logo-container">
+                <div class="logo-main">Youth Against Drugs</div>
+                <div class="logo-sub">Campaign Dashboard</div>
+            </div>
+            <div class="nav-actions">
+                <button class="btn btn-secondary btn-sm" id="copy-campaign-link-btn" style="text-transform: none; display: none;">
+                    🔗 Copy Registration Link
+                </button>
+                <button class="btn btn-secondary btn-sm" id="logout-btn" style="text-transform: none; display: none;">
+                    Log Out
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="container" style="padding: 32px 24px;">
+
+        <!-- Guard Loading State -->
+        <div id="auth-loading-state" style="display: block; text-align: center; padding: 60px 0;">
+            <div class="spinner"></div>
+            <p style="margin-top: 16px; color: var(--text-muted);">Verifying session credentials...</p>
+        </div>
+
+        <!-- PROTECTED DASHBOARD CONTENT -->
+        <div id="admin-dashboard-content" style="display: none;">
+            
+            <!-- Compact KPI Cards Grid (Max Height 120px) -->
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-label">Registrations</div>
+                    <div class="kpi-value" id="stat-registrations">0</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Certificates</div>
+                    <div class="kpi-value" id="stat-certificates">0</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Referrals</div>
+                    <div class="kpi-value" id="stat-referrals">0</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Pledges</div>
+                    <div class="kpi-value" id="stat-pledges">0</div>
+                </div>
+            </div>
+
+            <!-- Campaign Link Generator (Flat Panel) -->
+            <div style="margin-bottom: 32px;">
+                <h3 style="font-size: 22px; color: var(--primary); margin-bottom: 8px;">🔗 Generate Campaign Link</h3>
+                <p style="margin-bottom: 12px; font-size: 14px;">
+                    Generate campaign-specific registration URLs with embedded query parameters for tracking campaign reach.
+                </p>
+                <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 12px;">
+                    <div style="flex: 1; min-width: 250px;">
+                        <input type="text" id="campaign-id-input" class="form-control" placeholder="Enter Campaign ID (e.g. drug-awareness-2026)">
+                    </div>
+                    <button class="btn btn-primary btn-md" id="btn-generate-campaign">Generate Link</button>
+                </div>
+                <div id="campaign-output-container" style="display: none; align-items: center; gap: 8px; flex-wrap: wrap; background: var(--bg-surface); padding: 12px; border-radius: var(--border-radius); border: 1px solid var(--border-color);">
+                    <input type="text" id="campaign-link-output" class="form-control" readonly style="flex: 1; min-width: 250px; font-size: 14px;">
+                    <button class="btn btn-secondary btn-sm" id="btn-copy-campaign-output" style="text-transform:none; white-space: nowrap;">Copy Link</button>
+                    <a href="#" target="_blank" class="btn btn-whatsapp btn-sm" id="btn-share-campaign-output" style="text-transform:none; white-space: nowrap;">Share via WhatsApp</a>
+                </div>
+            </div>
+
+            <!-- Settings Panel (Collapsible Card) -->
+            <div class="flat-card" id="settings-card" style="display: none; margin-bottom: 24px;">
+                <h3 style="font-size: 22px; margin-bottom: 6px;">Supabase Integration Credentials</h3>
+                <p style="margin-bottom: 16px;">
+                    Credentials saved here are used to sync data with your Supabase cloud instance.
+                </p>
+                <form id="settings-form">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label" for="setting-supabase-url">Supabase API URL</label>
+                            <input type="text" id="setting-supabase-url" class="form-control" placeholder="https://xxxx.supabase.co">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label" for="setting-supabase-key">Supabase Public Anon Key</label>
+                            <input type="password" id="setting-supabase-key" class="form-control" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 12px; margin-top: 16px; justify-content: flex-end;">
+                        <button type="button" class="btn btn-secondary" id="cancel-settings-btn">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Credentials</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Clean Filters Toolbar (No enclosing card) -->
+            <div class="toolbar-clean">
+                <div class="toolbar-search-wrapper">
+                    <input type="text" id="admin-search-input" class="form-control" placeholder="Search by name, email, college, or referral code...">
+                </div>
+                <div style="min-width: 180px;">
+                    <select id="admin-status-filter" class="form-control" style="cursor: pointer;">
+                        <option value="">All Registrations</option>
+                        <option value="pledge-completed">Pledge Completed</option>
+                        <option value="pledge-pending">Pledge Pending</option>
+                    </select>
+                </div>
+                <button class="btn btn-secondary btn-sm" id="toggle-settings-btn">⚙️ API Credentials</button>
+            </div>
+
+            <!-- Clean Table Container -->
+            <div class="table-container">
+                <table class="table-premium">
+                    <thead>
+                        <tr>
+                            <th>Participant</th>
+                            <th>Contact</th>
+                            <th>Referral</th>
+                            <th>Progress</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-participants-tbody">
+                        <!-- Injected dynamically -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="admin-empty-state" style="display: none; text-align: center; padding: 40px; color: var(--text-muted); font-size: 16px;">
+                No registrations matched your search filter parameters.
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2026 Youth Against Drugs Campaign</p>
+    </footer>
+
+    <!-- Page Script -->
+    <script type="module" src="js/pages/dashboard.js?v=4"></script>
+</body>
+</html>
