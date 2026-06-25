@@ -1,4 +1,4 @@
-import { DatabaseService } from '../services/supabase.js?v=3';
+import { DatabaseService } from '../services/supabase.js?v=4';
 import { pronunciationDictionary } from '../services/pronunciationDictionary.js';
 import { Utils } from '../utils.js';
 
@@ -21,25 +21,37 @@ const PLEDGES = {
 
 document.addEventListener('DOMContentLoaded', async () => {
     const participantId = Utils.getQueryParam('id');
-    if (!participantId) {
-        Utils.showToast('Invalid participant ID. Redirecting to register...', 'error');
-        setTimeout(() => window.location.href = 'register', 1500);
+    const tempName = sessionStorage.getItem('temp_full_name');
+
+    if (!participantId && !tempName) {
+        Utils.showToast('Please enter your name first. Redirecting to start...', 'error');
+        setTimeout(() => {
+            const dest = window.location.pathname.endsWith('.html') ? 'register.html' : 'register';
+            window.location.href = dest;
+        }, 1500);
         return;
     }
 
     try {
-        participant = await DatabaseService.getParticipantById(participantId);
-        if (!participant) {
-            Utils.showToast('Participant not found. Redirecting to register...', 'error');
-            setTimeout(() => window.location.href = 'register', 1500);
-            return;
+        if (participantId) {
+            // Loading an existing participant (e.g. from admin panel or resume link)
+            participant = await DatabaseService.getParticipantById(participantId);
+            if (!participant) {
+                Utils.showToast('Participant not found. Redirecting...', 'error');
+                setTimeout(() => window.location.href = 'register', 1500);
+                return;
+            }
+            determineStartStep();
+        } else {
+            // Pre-registration workflow (client-side pledges first)
+            participant = { full_name: tempName };
+            currentStep = 1;
         }
 
-        determineStartStep();
         loadStep(currentStep);
     } catch (e) {
         console.error(e);
-        Utils.showToast('Error loading participant details.', 'error');
+        Utils.showToast('Error loading pledge details.', 'error');
     }
 
     // Error banner button bindings
@@ -58,6 +70,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             setupUtterance();
             togglePlay();
         });
+    }
+
+    // Bind post-pledge registration form submission
+    const regForm = document.getElementById('post-pledge-registration-form');
+    if (regForm) {
+        regForm.addEventListener('submit', handlePostPledgeRegistration);
     }
 });
 
@@ -87,7 +105,7 @@ function loadStep(step) {
     
     const btn = document.getElementById('pledge-btn');
     btn.setAttribute('disabled', 'true');
-    btn.textContent = step === 3 ? 'Accept Pledge & Generate Certificate 🎓' : 'Continue to Next Step ➡️';
+    btn.textContent = step === 3 ? 'Accept Pledge & Claim Certificate 🎓' : 'Continue to Next Step ➡️';
 
     // Update Progress Indicator
     const progressFill = document.getElementById('progress-bar-fill');
@@ -209,7 +227,6 @@ function setIndianVoice() {
     
     let selectedVoice = null;
     
-    // Priority 1: en-IN voices
     const inVoices = voices.filter(v => 
         v.lang === 'en-IN' || 
         v.lang.toLowerCase().replace('_', '-').startsWith('en-in') ||
@@ -217,24 +234,20 @@ function setIndianVoice() {
         v.name.toLowerCase().includes('indian')
     );
     
-    // Prefer Neural Indian voices
     selectedVoice = inVoices.find(v => v.name.toLowerCase().includes('neural') || v.name.toLowerCase().includes('natural'));
     
     if (!selectedVoice && inVoices.length > 0) {
         selectedVoice = inVoices[0];
     }
     
-    // Priority 2: en-GB fallback
     if (!selectedVoice) {
         selectedVoice = voices.find(v => v.lang.toLowerCase().replace('_', '-').startsWith('en-gb'));
     }
     
-    // Priority 3: en-US fallback
     if (!selectedVoice) {
         selectedVoice = voices.find(v => v.lang.toLowerCase().replace('_', '-').startsWith('en-us'));
     }
     
-    // Absolute fallback
     if (!selectedVoice && voices.length > 0) {
         selectedVoice = voices[0];
     }
@@ -252,26 +265,22 @@ function setIndianVoice() {
 }
 
 function setupControls() {
-    // Play button
     const playBtn = document.getElementById('btn-play-voice');
     const newPlayBtn = playBtn.cloneNode(true);
     playBtn.parentNode.replaceChild(newPlayBtn, playBtn);
     newPlayBtn.textContent = '🔊 Play Narration';
     newPlayBtn.addEventListener('click', togglePlay);
 
-    // Restart button
     const restartBtn = document.getElementById('btn-restart-voice');
     const newRestartBtn = restartBtn.cloneNode(true);
     restartBtn.parentNode.replaceChild(newRestartBtn, restartBtn);
     newRestartBtn.addEventListener('click', restartReading);
 
-    // Checkbox toggle
     const chk = document.getElementById('pledge-chk');
     const newChk = chk.cloneNode(true);
     chk.parentNode.replaceChild(newChk, chk);
     newChk.addEventListener('change', handleCheckboxToggle);
 
-    // Continue action button
     const btn = document.getElementById('pledge-btn');
     const newBtn = btn.cloneNode(true);
     btn.parentNode.replaceChild(newBtn, btn);
@@ -315,7 +324,6 @@ function handleSpeechBoundary(event) {
     if (event.name !== 'word') return;
     const charIndex = event.charIndex;
     
-    // Find active segment mapping based on spoken character index
     const activeSegment = spokenSegments.find(s => charIndex >= s.start && charIndex < s.end);
 
     if (activeSegment) {
@@ -334,7 +342,6 @@ function handleSpeechEnd() {
     stopVisualizer();
     clearWordHighlights();
 
-    // Enable Checkbox after successful narration
     const chk = document.getElementById('pledge-chk');
     if (chk) chk.removeAttribute('disabled');
     Utils.showToast(`Pledge Statement ${currentStep} complete. Please check the box.`, 'info');
@@ -358,7 +365,6 @@ function showErrorBanner() {
         errorContainer.style.display = 'block';
     }
     
-    // Disable checkbox and button
     const chk = document.getElementById('pledge-chk');
     if (chk) {
         chk.checked = false;
@@ -377,7 +383,6 @@ function hideErrorBanner() {
 
 function handleCheckboxToggle(e) {
     const btn = document.getElementById('pledge-btn');
-    // Can only continue if checkbox is checked and speech completed successfully
     if (e.target.checked && speechCompleted) {
         btn.removeAttribute('disabled');
     } else {
@@ -386,27 +391,115 @@ function handleCheckboxToggle(e) {
 }
 
 async function handleContinueClick() {
-    const btn = document.getElementById('pledge-btn');
-    btn.setAttribute('disabled', 'true');
-    Utils.showLoading(true);
-
-    try {
-        const result = await DatabaseService.completePledgeStep(participant.id, currentStep, chosenPledgeText);
-        Utils.showLoading(false);
-
+    // If not registered yet (temp_full_name mode)
+    if (!Utils.getQueryParam('id')) {
         if (currentStep < 3) {
             Utils.showToast(`Step ${currentStep} completed successfully!`, 'success');
             loadStep(currentStep + 1);
         } else {
-            Utils.showToast('All pledges accepted! Generating certificate...', 'success');
-            setTimeout(() => {
-                window.location.href = `verify?id=${result.certificate.certificate_id}`;
-            }, 1200);
+            // All pledges accepted, now show registration view
+            if (synth) synth.cancel();
+            document.getElementById('pledge-main-card').style.display = 'none';
+            document.getElementById('pledge-registration-card').style.display = 'block';
+            document.getElementById('reg-name').value = sessionStorage.getItem('temp_full_name') || '';
         }
-    } catch (e) {
+    } else {
+        // Resume workflow (from DB participant ID)
+        const btn = document.getElementById('pledge-btn');
+        btn.setAttribute('disabled', 'true');
+        Utils.showLoading(true);
+
+        try {
+            const result = await DatabaseService.completePledgeStep(participant.id, currentStep, chosenPledgeText);
+            Utils.showLoading(false);
+
+            if (currentStep < 3) {
+                Utils.showToast(`Step ${currentStep} completed successfully!`, 'success');
+                loadStep(currentStep + 1);
+            } else {
+                Utils.showToast('All pledges accepted! Generating certificate...', 'success');
+                setTimeout(() => {
+                    window.location.href = `verify?id=${result.certificate.certificate_id}`;
+                }, 1200);
+            }
+        } catch (e) {
+            Utils.showLoading(false);
+            console.error(e);
+            Utils.showToast('Failed to save progress. Please try again.', 'error');
+            btn.removeAttribute('disabled');
+        }
+    }
+}
+
+// Indian Mobile Number Validator and Standardizer
+function standardizeIndianPhone(phone) {
+    const clean = phone.replace(/[\s-()]/g, '');
+    const match = clean.match(/^(?:\+?91|0)?([6-9]\d{9})$/);
+    if (!match) return null;
+    return '+91' + match[1];
+}
+
+// Handle Post-Pledge Registration form submission
+async function handlePostPledgeRegistration(e) {
+    e.preventDefault();
+
+    const fullName = document.getElementById('reg-name').value.trim();
+    const whatsappInput = document.getElementById('reg-whatsapp').value.trim();
+    const email = document.getElementById('reg-email').value.trim();
+    const college = document.getElementById('reg-college').value.trim();
+    const referredBy = sessionStorage.getItem('referred_by');
+
+    const whatsapp = standardizeIndianPhone(whatsappInput);
+    if (!whatsapp) {
+        Utils.showToast('Please enter a valid 10-digit Indian WhatsApp number.', 'error');
+        return;
+    }
+
+    if (!Utils.validateEmail(email)) {
+        Utils.showToast('Please enter a valid email address.', 'error');
+        return;
+    }
+
+    Utils.showLoading(true);
+
+    try {
+        // Create participant data with dummy values for Friend nominations to satisfy DB constraint
+        const participantData = {
+            fullName,
+            whatsappNumber: whatsapp,
+            email,
+            college,
+            referredBy: referredBy || null,
+            friend1Name: 'N/A',
+            friend1Whatsapp: '+910000000000',
+            friend2Name: 'N/A',
+            friend2Whatsapp: '+910000000000',
+            friend3Name: null,
+            friend3Whatsapp: null
+        };
+
+        // 1. Insert participant in database
+        const newPart = await DatabaseService.registerParticipant(participantData);
+
+        // 2. Complete all pledge steps in database to trigger certificate issue
+        await DatabaseService.completePledgeStep(newPart.id, 1, PLEDGES[1]);
+        await DatabaseService.completePledgeStep(newPart.id, 2, PLEDGES[2]);
+        const result = await DatabaseService.completePledgeStep(newPart.id, 3, PLEDGES[3]);
+
         Utils.showLoading(false);
-        console.error(e);
-        Utils.showToast('Failed to save progress. Please try again.', 'error');
-        btn.removeAttribute('disabled');
+        Utils.showToast('Registration complete! Generating your certificate...', 'success');
+
+        // Clear temporary session storage items
+        sessionStorage.removeItem('temp_full_name');
+        sessionStorage.removeItem('referred_by');
+
+        setTimeout(() => {
+            window.location.href = `verify?id=${result.certificate.certificate_id}`;
+        }, 1200);
+
+    } catch (err) {
+        Utils.showLoading(false);
+        console.error(err);
+        Utils.showToast(err.message || 'Registration failed. Please try again.', 'error');
     }
 }

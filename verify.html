@@ -12,7 +12,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <style>
-        /* Custom social share panel styles */
+        /* Custom share panel styles */
         .share-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
@@ -24,7 +24,7 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            padding: 10px;
+            padding: 12px;
             border-radius: 6px;
             font-family: var(--font-dashboard);
             font-size: 13px;
@@ -53,35 +53,6 @@
         .share-btn-native { background-color: var(--primary); }
         .share-btn-native:hover { background-color: #059669; }
 
-        .ref-box-premium {
-            background: var(--bg-surface);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 24px;
-            margin-top: 32px;
-        }
-        
-        .ref-layout {
-            display: flex;
-            gap: 24px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        .ref-content {
-            flex: 1;
-            min-width: 280px;
-        }
-        .ref-qr-wrapper {
-            background: #ffffff;
-            padding: 12px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 144px;
-            min-height: 144px;
-        }
-
         .congrats-header {
             margin-bottom: 32px;
             animation: fadeIn 0.8s ease;
@@ -90,6 +61,27 @@
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        .qr-outreach-container {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 24px;
+            margin-top: 32px;
+            text-align: center;
+        }
+
+        .ref-qr-wrapper {
+            background: #ffffff;
+            padding: 12px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 144px;
+            height: 144px;
+            margin: 16px 0;
         }
     </style>
 </head>
@@ -117,13 +109,13 @@
         <!-- Success/Valid State -->
         <div id="verify-success-container" style="display: none;">
             
-            <!-- STEP 5: CELEBRATION HEADER -->
+            <!-- CELEBRATION HEADER -->
             <div class="congrats-header" id="celebration-banner" style="display: none;">
                 <h1 style="font-family: var(--font-serif); font-size: 36px; margin-bottom: 8px; color:#ffffff;">Congratulations, <span id="congrats-name" style="color:var(--primary);">Rahul</span>!</h1>
                 <p style="font-size: 16px; max-width: 600px; margin: 0 auto 20px; line-height:1.5;">
                     You are now officially part of the Youth Against Drugs Campaign. Your commitment is verified and recorded below.
                 </p>
-                <div style="font-size:24px; animation: bounce 2s infinite; margin-bottom: 12px;">🎉 🎓 🛡️</div>
+                <div style="font-size:24px; margin-bottom: 12px;">🎉 🎓 🛡️</div>
             </div>
 
             <div class="badge badge-success" style="font-size: 14px; padding: 6px 16px; margin-bottom: 24px;">
@@ -171,18 +163,24 @@
             </div>
 
             <!-- Actions Panel -->
-            <div style="margin-top: 24px; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
+            <div style="margin-top: 32px; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
                 <button id="download-pdf-btn" class="btn btn-primary" style="padding: 12px 24px;">
-                    Download PDF Certificate 📥
+                    Download Certificate 📥
                 </button>
                 <button id="btn-share-native-cert" class="btn btn-secondary" style="padding: 12px 24px; display: none;">
                     Share Certificate 🔗
                 </button>
+                <button id="copy-cert-link-btn" class="btn btn-secondary" style="padding: 12px 24px;">
+                    Copy Certificate Link 🔗
+                </button>
+                <button id="copy-ref-link-btn" class="btn btn-secondary" style="padding: 12px 24px;">
+                    Copy Referral Link 👥
+                </button>
             </div>
 
-            <!-- Modern Certificate Sharing Panel -->
+            <!-- Modern Combined Sharing Panel -->
             <div style="max-width: 600px; margin: 32px auto 0; text-align: left;" id="cert-sharing-panel">
-                <h4 style="font-size: 16px; color: var(--text-muted); text-transform: uppercase; font-family: var(--font-dashboard); margin-bottom: 8px;">Share Certificate</h4>
+                <h4 style="font-size: 14px; color: var(--text-muted); text-transform: uppercase; font-family: var(--font-dashboard); margin-bottom: 12px; text-align: center;">Share Certificate & Invitation</h4>
                 <div class="share-grid">
                     <a href="#" id="share-cert-wa" target="_blank" class="share-btn share-btn-wa">💬 WhatsApp</a>
                     <a href="#" id="share-cert-fb" target="_blank" class="share-btn share-btn-fb">🔵 Facebook</a>
@@ -192,41 +190,14 @@
                 </div>
             </div>
 
-            <!-- Referral Outreach Section -->
-            <div class="ref-box-premium" style="max-width: 700px; margin: 40px auto 0; text-align: left;">
-                <h3 style="font-size: 22px; color: var(--primary); margin-bottom: 8px;">🌟 Help Grow This Movement</h3>
-                <p style="margin-bottom: 24px; color: var(--text-muted);">
-                    Invite your friends to take the pledge and join the campaign. Your ranking increases as they complete their pledge journey!
+            <!-- Referral QR Section (Directly below certificate sharing) -->
+            <div class="qr-outreach-container" style="max-width: 600px; margin: 40px auto 0;">
+                <h3 style="font-size: 20px; color: var(--primary); margin-bottom: 4px;">Invite Others to Join the Movement</h3>
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 8px;">
+                    Have your friends scan this QR code to register and take the pledge under your referral.
                 </p>
-                
-                <div class="ref-layout">
-                    <!-- Referral details -->
-                    <div class="ref-content">
-                        <div class="form-group" style="margin-bottom: 16px;">
-                            <label class="form-label" style="font-size: 12px;">Your Personal Referral Link</label>
-                            <div style="display: flex; gap: 8px;">
-                                <input type="text" id="share-referral-link" class="form-control" readonly style="font-size: 14px;">
-                                <button class="btn btn-secondary btn-sm" id="copy-ref-link-btn" style="text-transform:none; white-space: nowrap;">Copy Link</button>
-                            </div>
-                        </div>
-
-                        <div style="margin-top: 12px;">
-                            <label class="form-label" style="font-size: 12px; margin-bottom: 8px;">Share Invitation Link</label>
-                            <div class="share-grid" style="margin: 0;">
-                                <a href="#" id="share-ref-wa" target="_blank" class="share-btn share-btn-wa" style="padding: 8px; font-size:12px;">💬 WhatsApp</a>
-                                <a href="#" id="share-ref-tg" target="_blank" class="share-btn share-btn-tg" style="padding: 8px; font-size:12px;">✈️ Telegram</a>
-                                <a href="#" id="share-ref-email" target="_blank" class="share-btn share-btn-email" style="padding: 8px; font-size:12px;">✉️ Email</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- QR code generator wrapper -->
-                    <div style="text-align: center;">
-                        <div class="ref-qr-wrapper" id="referral-qr-container">
-                            <!-- Rendered dynamically -->
-                        </div>
-                        <span style="font-size: 11px; color: var(--text-muted); display: block; margin-top: 8px; font-family:var(--font-dashboard);">Scan QR to Register</span>
-                    </div>
+                <div class="ref-qr-wrapper" id="referral-qr-container">
+                    <!-- Rendered dynamically -->
                 </div>
             </div>
         </div>
@@ -254,6 +225,6 @@
     </footer>
 
     <!-- Page Script -->
-    <script type="module" src="js/pages/verify.js?v=4"></script>
+    <script type="module" src="js/pages/verify.js?v=5"></script>
 </body>
 </html>

@@ -1,6 +1,5 @@
 import { DatabaseService } from '../services/supabase.js?v=3';
 import { CertificateService } from '../services/certificate.js';
-import { WhatsAppService } from '../services/whatsapp.js';
 import { ReferralService } from '../services/referral.js';
 import { Utils } from '../utils.js';
 
@@ -62,18 +61,15 @@ async function verifyCertificate(certId) {
             const verificationUrl = `${window.location.origin}/verify?id=${certData.certificate_id}`;
             CertificateService.renderQRCode('cert-qr-container', verificationUrl);
 
-            // Configure Certificate Social Sharing Panel
-            setupCertificateSharing(certData.certificate_id, verificationUrl, participant.full_name);
-
-            // Setup Referral Link Display, sharing & QR Code
+            // Setup Referral Link Display
             const refLink = ReferralService.generateReferralLink(participant.referral_code);
-            const refInput = document.getElementById('share-referral-link');
-            if (refInput) {
-                refInput.value = refLink;
-            }
 
-            setupCopyButton('copy-ref-link-btn', refLink, 'Referral link copied!');
-            setupReferralSharing(refLink, participant.full_name);
+            // Configure Copy Buttons
+            setupCopyButton('copy-cert-link-btn', verificationUrl, 'Certificate verification link copied!');
+            setupCopyButton('copy-ref-link-btn', refLink, 'Referral invitation link copied!');
+
+            // Configure Combined Sharing Message Panel
+            setupCombinedSharing(verificationUrl, refLink);
 
             // Configure PDF download button
             const downloadBtn = document.getElementById('download-pdf-btn');
@@ -98,30 +94,38 @@ async function verifyCertificate(certId) {
     }
 }
 
-function setupCertificateSharing(certId, verificationUrl, participantName) {
-    const text = `I have taken the Youth Against Drugs pledge and received my official verified certificate! Check my commitment details here:`;
-    
-    // Social Share bindings for Certificate
+function setupCombinedSharing(verificationUrl, refLink) {
+    const textMessage = 
+`I have proudly completed the Youth Against Drugs Campaign and taken the pledge for a drug-free future.
+
+Here is my campaign certificate:
+${verificationUrl}
+
+Join me by taking the pledge using my personal invitation link:
+${refLink}
+
+Together we can build a healthier and drug-free society.`;
+
+    // Social Share links
     const waShare = document.getElementById('share-cert-wa');
-    if (waShare) waShare.setAttribute('href', `https://wa.me/?text=${encodeURIComponent(text + ' ' + verificationUrl)}`);
+    if (waShare) waShare.setAttribute('href', `https://wa.me/?text=${encodeURIComponent(textMessage)}`);
 
     const fbShare = document.getElementById('share-cert-fb');
     if (fbShare) fbShare.setAttribute('href', `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(verificationUrl)}`);
 
     const xShare = document.getElementById('share-cert-x');
-    if (xShare) xShare.setAttribute('href', `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(verificationUrl)}`);
+    if (xShare) xShare.setAttribute('href', `https://twitter.com/intent/tweet?text=${encodeURIComponent("I have taken the Youth Against Drugs pledge! Join me:")}&url=${encodeURIComponent(refLink)}`);
 
     const tgShare = document.getElementById('share-cert-tg');
-    if (tgShare) tgShare.setAttribute('href', `https://t.me/share/url?url=${encodeURIComponent(verificationUrl)}&text=${encodeURIComponent(text)}`);
+    if (tgShare) tgShare.setAttribute('href', `https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${encodeURIComponent(textMessage)}`);
 
     const emailShare = document.getElementById('share-cert-email');
     if (emailShare) {
         const subject = `Official Youth Against Drugs Pledge Certificate`;
-        const body = `Hi! I just participated in the anti-drug awareness movement and taken the pledge. Here is my official verified certificate: ${verificationUrl}`;
-        emailShare.setAttribute('href', `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`);
+        emailShare.setAttribute('href', `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(textMessage)}`);
     }
 
-    // Native Web Share API integration
+    // Native Web Share integration
     const nativeShareBtn = document.getElementById('btn-share-native-cert');
     const customPanel = document.getElementById('cert-sharing-panel');
     if (navigator.share && nativeShareBtn) {
@@ -132,32 +136,13 @@ function setupCertificateSharing(certId, verificationUrl, participantName) {
         nativeShareBtn.parentNode.replaceChild(newNativeBtn, nativeShareBtn);
         newNativeBtn.addEventListener('click', () => {
             navigator.share({
-                title: 'Youth Against Drugs Certificate',
-                text: text,
-                url: verificationUrl
+                title: 'Youth Against Drugs Certificate & Invitation',
+                text: textMessage
             }).catch(err => console.log('Share failed:', err));
         });
     }
-}
 
-function setupReferralSharing(refLink, participantName) {
-    const text = `I have joined the Youth Against Drugs Campaign and taken the pledge for a drug-free future. Join me by taking the pledge using my personal invitation link:`;
-    
-    // Social Share bindings for Referral Link
-    const waRef = document.getElementById('share-ref-wa');
-    if (waRef) waRef.setAttribute('href', `https://wa.me/?text=${encodeURIComponent(text + ' ' + refLink)}`);
-
-    const tgRef = document.getElementById('share-ref-tg');
-    if (tgRef) tgRef.setAttribute('href', `https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${encodeURIComponent(text)}`);
-
-    const emailRef = document.getElementById('share-ref-email');
-    if (emailRef) {
-        const subject = `Take the Youth Against Drugs Pledge!`;
-        const body = `Hi! I have joined the anti-drug movement and taken the pledge. Support awareness and join me by taking the pledge using my personal referral link: ${refLink}`;
-        emailRef.setAttribute('href', `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`);
-    }
-
-    // Render Referral QR Code
+    // Render Referral QR Code pointing directly to participant's referral registration link
     const qrContainer = document.getElementById('referral-qr-container');
     if (qrContainer && window.QRCode) {
         qrContainer.innerHTML = '';

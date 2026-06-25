@@ -24,13 +24,12 @@
         
         <!-- Loading State -->
         <div id="pledge-loading-card" style="padding: 40px 0;">
-            <div class="spinner"></div>
-            <p style="margin-top: 16px;">Preparing your pledge journey...</p>
+            <div class="spinner" style="margin: 0 auto;"></div>
+            <p style="margin-top: 16px; color: var(--text-muted);">Preparing your pledge journey...</p>
         </div>
 
-        <!-- Flat Pledge Container (no card boundaries) -->
+        <!-- Pledge Card -->
         <div id="pledge-main-card" style="display: none;">
-            
             <!-- Step Tracker -->
             <div class="progress-container">
                 <div class="progress-header">
@@ -43,11 +42,11 @@
             </div>
 
             <h2 id="pledge-title-lbl" style="font-size: 28px; margin-top: 24px; margin-bottom: 8px;">Anti-Drug Pledge</h2>
-            <p style="margin-bottom: 32px;">
+            <p style="margin-bottom: 32px; font-size: 15px;">
                 Listen to the full narration of all three pledges sequentially to complete your campaign pledge.
             </p>
 
-            <!-- Flat Reading Area (no card background, no border, just typography) -->
+            <!-- Flat Reading Area -->
             <div id="pledge-text-container" style="font-size: 22px; font-family: var(--font-serif); line-height: 1.6; text-align: left; margin-bottom: 32px; min-height: 120px;">
                 <!-- Word spans injected here -->
             </div>
@@ -83,7 +82,7 @@
                 </div>
             </div>
 
-            <!-- Acceptance Box (flat checkbox, no outer card background or border) -->
+            <!-- Acceptance Box -->
             <div style="text-align: left; margin-bottom: 32px;">
                 <div style="display: flex; gap: 12px; align-items: flex-start;">
                     <input type="checkbox" id="pledge-chk" disabled style="width: 20px; height: 20px; accent-color: var(--primary); cursor: pointer; margin-top: 2px;">
@@ -103,6 +102,40 @@
             </div>
         </div>
 
+        <!-- POST-PLEDGE REGISTRATION VIEW -->
+        <div id="pledge-registration-card" style="display: none; text-align: left;">
+            <h2 style="font-size: 28px; margin-bottom: 8px; text-align: center; color: var(--primary);">Pledge Completed! 🎉</h2>
+            <p style="margin-bottom: 32px; font-size: 15px; text-align: center; color: var(--text-muted);">
+                Please complete your details to claim and issue your verified anti-drug awareness certificate.
+            </p>
+
+            <form id="post-pledge-registration-form">
+                
+                <div class="form-group">
+                    <label class="form-label" for="reg-name">Full Name</label>
+                    <input type="text" id="reg-name" class="form-control" readonly style="opacity: 0.8; background-color: var(--bg-dark);">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="reg-whatsapp">WhatsApp Number *</label>
+                    <input type="tel" id="reg-whatsapp" class="form-control" placeholder="10-digit mobile number (e.g. 9876543210)" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="reg-email">Email Address *</label>
+                    <input type="email" id="reg-email" class="form-control" placeholder="name@example.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="reg-college">College / Institution *</label>
+                    <input type="text" id="reg-college" class="form-control" placeholder="Name of your college/university" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-md" style="width: 100%; margin-top: 16px; padding: 12px; font-size: 16px;">
+                    Register & Generate Certificate 🎓
+                </button>
+            </form>
+        </div>
 
     </main>
 
@@ -112,6 +145,6 @@
     </footer>
 
     <!-- Page Script -->
-    <script type="module" src="js/pages/pledge.js?v=3"></script>
+    <script type="module" src="js/pages/pledge.js?v=5"></script>
 </body>
 </html>
