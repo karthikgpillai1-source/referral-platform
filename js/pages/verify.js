@@ -68,8 +68,8 @@ async function verifyCertificate(certId) {
             setupCopyButton('copy-cert-link-btn', verificationUrl, 'Certificate verification link copied!');
             setupCopyButton('copy-ref-link-btn', refLink, 'Referral invitation link copied!');
 
-            // Configure Combined Sharing Message Panel
-            setupCombinedSharing(verificationUrl, refLink);
+            // Configure Combined sharing & button handlers
+            setupCertificateSharing(verificationUrl, refLink);
 
             // Configure PDF download button
             const downloadBtn = document.getElementById('download-pdf-btn');
@@ -94,51 +94,57 @@ async function verifyCertificate(certId) {
     }
 }
 
-function setupCombinedSharing(verificationUrl, refLink) {
+function setupCertificateSharing(verificationUrl, refLink) {
+    // Configurable campaign message layout
     const textMessage = 
-`I have proudly completed the Youth Against Drugs Campaign and taken the pledge for a drug-free future.
+`I have proudly completed the Youth Against Drugs Campaign and taken my pledge for a drug-free future.
 
-Here is my campaign certificate:
-${verificationUrl}
+This certificate represents my commitment to building a healthier and safer society.
 
-Join me by taking the pledge using my personal invitation link:
+I invite you to join this movement and take your own pledge using my personal invitation below.
 ${refLink}
 
-Together we can build a healthier and drug-free society.`;
+Together, we can inspire a drug-free generation.`;
 
-    // Social Share links
+    // Social Share buttons bindings
     const waShare = document.getElementById('share-cert-wa');
     if (waShare) waShare.setAttribute('href', `https://wa.me/?text=${encodeURIComponent(textMessage)}`);
+
+    const tgShare = document.getElementById('share-cert-tg');
+    if (tgShare) tgShare.setAttribute('href', `https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${encodeURIComponent(textMessage)}`);
 
     const fbShare = document.getElementById('share-cert-fb');
     if (fbShare) fbShare.setAttribute('href', `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(verificationUrl)}`);
 
     const xShare = document.getElementById('share-cert-x');
-    if (xShare) xShare.setAttribute('href', `https://twitter.com/intent/tweet?text=${encodeURIComponent("I have taken the Youth Against Drugs pledge! Join me:")}&url=${encodeURIComponent(refLink)}`);
-
-    const tgShare = document.getElementById('share-cert-tg');
-    if (tgShare) tgShare.setAttribute('href', `https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${encodeURIComponent(textMessage)}`);
+    if (xShare) xShare.setAttribute('href', `https://twitter.com/intent/tweet?text=${encodeURIComponent("I have proudly taken the Youth Against Drugs pledge! Join the movement:")}&url=${encodeURIComponent(refLink)}`);
 
     const emailShare = document.getElementById('share-cert-email');
     if (emailShare) {
-        const subject = `Official Youth Against Drugs Pledge Certificate`;
+        const subject = `Youth Against Drugs Pledge Certificate`;
         emailShare.setAttribute('href', `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(textMessage)}`);
     }
 
-    // Native Web Share integration
-    const nativeShareBtn = document.getElementById('btn-share-native-cert');
-    const customPanel = document.getElementById('cert-sharing-panel');
-    if (navigator.share && nativeShareBtn) {
-        customPanel.style.display = 'none';
-        nativeShareBtn.style.display = 'inline-flex';
-        
-        const newNativeBtn = nativeShareBtn.cloneNode(true);
-        nativeShareBtn.parentNode.replaceChild(newNativeBtn, nativeShareBtn);
-        newNativeBtn.addEventListener('click', () => {
-            navigator.share({
-                title: 'Youth Against Drugs Certificate & Invitation',
-                text: textMessage
-            }).catch(err => console.log('Share failed:', err));
+    // Copy Share Text button
+    setupCopyButton('btn-copy-share-text', textMessage, 'Pledge sharing message copied!');
+
+    // Primary CTA Button: Share My Achievement
+    const btnShareAchievement = document.getElementById('btn-share-achievement');
+    if (btnShareAchievement) {
+        btnShareAchievement.addEventListener('click', () => {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Youth Against Drugs Pledge',
+                    text: textMessage
+                }).catch(err => console.log('Share failed:', err));
+            } else {
+                // Fallback: smooth scroll to sharing panel
+                const sharePanel = document.getElementById('cert-sharing-panel');
+                if (sharePanel) {
+                    sharePanel.scrollIntoView({ behavior: 'smooth' });
+                    Utils.showToast('Please select a platform below to share.', 'info');
+                }
+            }
         });
     }
 

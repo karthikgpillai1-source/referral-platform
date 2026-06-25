@@ -12,7 +12,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <style>
-        /* Custom share panel styles */
+        /* Premium custom social sharing panel styles */
         .share-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
@@ -50,11 +50,11 @@
         .share-btn-email { background-color: #ea4335; }
         .share-btn-email:hover { background-color: #d93025; }
 
-        .share-btn-native { background-color: var(--primary); }
-        .share-btn-native:hover { background-color: #059669; }
+        .share-btn-copy { background-color: #4b5563; }
+        .share-btn-copy:hover { background-color: #374151; }
 
         .congrats-header {
-            margin-bottom: 32px;
+            margin-bottom: 24px;
             animation: fadeIn 0.8s ease;
         }
         
@@ -109,20 +109,26 @@
         <!-- Success/Valid State -->
         <div id="verify-success-container" style="display: none;">
             
-            <!-- CELEBRATION HEADER -->
+            <!-- 1. CONGRATULATIONS SCREEN -->
             <div class="congrats-header" id="celebration-banner" style="display: none;">
                 <h1 style="font-family: var(--font-serif); font-size: 36px; margin-bottom: 8px; color:#ffffff;">Congratulations, <span id="congrats-name" style="color:var(--primary);">Rahul</span>!</h1>
-                <p style="font-size: 16px; max-width: 600px; margin: 0 auto 20px; line-height:1.5;">
+                <p style="font-size: 16px; max-width: 600px; margin: 0 auto 24px; line-height:1.5;">
                     You are now officially part of the Youth Against Drugs Campaign. Your commitment is verified and recorded below.
                 </p>
-                <div style="font-size:24px; margin-bottom: 12px;">🎉 🎓 🛡️</div>
+
+                <!-- Primary CTA Button: Share My Achievement -->
+                <div style="margin-bottom: 32px;">
+                    <button id="btn-share-achievement" class="btn btn-primary btn-md" style="padding: 14px 32px; font-size: 16px; min-width: 250px; background-color: var(--primary); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);">
+                        Share My Achievement 🌟
+                    </button>
+                </div>
             </div>
 
+            <!-- 2. LARGE CERTIFICATE PREVIEW -->
             <div class="badge badge-success" style="font-size: 14px; padding: 6px 16px; margin-bottom: 24px;">
                 ✓ Official Verified Campaign Certificate
             </div>
             
-            <!-- Premium Landscape Certificate -->
             <div class="certificate-preview-container">
                 <div class="certificate-canvas-wrapper" id="cert-pdf-target">
                     <!-- Fine Gold Border -->
@@ -162,39 +168,37 @@
                 </div>
             </div>
 
-            <!-- Actions Panel -->
-            <div style="margin-top: 32px; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
-                <button id="download-pdf-btn" class="btn btn-primary" style="padding: 12px 24px;">
-                    Download Certificate 📥
+            <!-- 3. SOCIAL SHARE PANEL (Directly below certificate preview) -->
+            <div style="max-width: 600px; margin: 32px auto 0;" id="cert-sharing-panel">
+                <h4 style="font-size: 14px; color: var(--text-muted); text-transform: uppercase; font-family: var(--font-dashboard); margin-bottom: 12px; text-align: center;">Share Certificate & Invitation</h4>
+                <div class="share-grid">
+                    <a href="#" id="share-cert-wa" target="_blank" class="share-btn share-btn-wa">💬 WhatsApp</a>
+                    <a href="#" id="share-cert-tg" target="_blank" class="share-btn share-btn-tg">✈️ Telegram</a>
+                    <a href="#" id="share-cert-fb" target="_blank" class="share-btn share-btn-fb">🔵 Facebook</a>
+                    <a href="#" id="share-cert-x" target="_blank" class="share-btn share-btn-x">⚫ X (Twitter)</a>
+                    <a href="#" id="share-cert-email" target="_blank" class="share-btn share-btn-email">✉️ Email</a>
+                    <button id="btn-copy-share-text" class="share-btn share-btn-copy">📋 Copy Message</button>
+                </div>
+            </div>
+
+            <!-- Additional actions -->
+            <div style="margin-top: 24px; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
+                <button id="download-pdf-btn" class="btn btn-secondary btn-sm" style="padding: 10px 20px;">
+                    Download PDF Certificate 📥
                 </button>
-                <button id="btn-share-native-cert" class="btn btn-secondary" style="padding: 12px 24px; display: none;">
-                    Share Certificate 🔗
-                </button>
-                <button id="copy-cert-link-btn" class="btn btn-secondary" style="padding: 12px 24px;">
+                <button id="copy-cert-link-btn" class="btn btn-secondary btn-sm" style="padding: 10px 20px;">
                     Copy Certificate Link 🔗
                 </button>
-                <button id="copy-ref-link-btn" class="btn btn-secondary" style="padding: 12px 24px;">
+                <button id="copy-ref-link-btn" class="btn btn-secondary btn-sm" style="padding: 10px 20px;">
                     Copy Referral Link 👥
                 </button>
             </div>
 
-            <!-- Modern Combined Sharing Panel -->
-            <div style="max-width: 600px; margin: 32px auto 0; text-align: left;" id="cert-sharing-panel">
-                <h4 style="font-size: 14px; color: var(--text-muted); text-transform: uppercase; font-family: var(--font-dashboard); margin-bottom: 12px; text-align: center;">Share Certificate & Invitation</h4>
-                <div class="share-grid">
-                    <a href="#" id="share-cert-wa" target="_blank" class="share-btn share-btn-wa">💬 WhatsApp</a>
-                    <a href="#" id="share-cert-fb" target="_blank" class="share-btn share-btn-fb">🔵 Facebook</a>
-                    <a href="#" id="share-cert-x" target="_blank" class="share-btn share-btn-x">⚫ X (Twitter)</a>
-                    <a href="#" id="share-cert-tg" target="_blank" class="share-btn share-btn-tg">✈️ Telegram</a>
-                    <a href="#" id="share-cert-email" target="_blank" class="share-btn share-btn-email">✉️ Email</a>
-                </div>
-            </div>
-
-            <!-- Referral QR Section (Directly below certificate sharing) -->
+            <!-- 4. REFERRAL QR SECTION -->
             <div class="qr-outreach-container" style="max-width: 600px; margin: 40px auto 0;">
                 <h3 style="font-size: 20px; color: var(--primary); margin-bottom: 4px;">Invite Others to Join the Movement</h3>
                 <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 8px;">
-                    Have your friends scan this QR code to register and take the pledge under your referral.
+                    Have your friends scan this QR code to register and take the pledge under your referral invitation.
                 </p>
                 <div class="ref-qr-wrapper" id="referral-qr-container">
                     <!-- Rendered dynamically -->
@@ -225,6 +229,6 @@
     </footer>
 
     <!-- Page Script -->
-    <script type="module" src="js/pages/verify.js?v=5"></script>
+    <script type="module" src="js/pages/verify.js?v=6"></script>
 </body>
 </html>
