@@ -6,30 +6,77 @@
     <title>Pledge Journey - Youth Against Drugs</title>
     <link rel="stylesheet" href="css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Premium Fonts & Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Animation Libraries CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
+    <style>
+        .pledge-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            padding: 48px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            margin-top: 32px;
+        }
+        .pledge-word {
+            cursor: default;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .pledge-text-area {
+            font-size: 22px;
+            font-weight: 500;
+            line-height: 1.6;
+            text-align: left;
+            margin-bottom: 40px;
+            min-height: 120px;
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid var(--border-color);
+            padding: 24px;
+            border-radius: var(--border-radius-md);
+        }
+        .checkbox-container {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            padding: 16px 20px;
+            border-radius: var(--border-radius-sm);
+            margin-bottom: 32px;
+            text-align: left;
+            transition: var(--transition-smooth);
+        }
+        .checkbox-container:hover {
+            border-color: rgba(225, 29, 72, 0.2);
+            background: rgba(225, 29, 72, 0.01);
+        }
+    </style>
 </head>
 <body>
 
     <!-- Header -->
     <header>
-        <div class="container navbar" style="justify-content: center;">
+        <div class="navbar" style="justify-content: center;">
             <div class="logo-container" style="align-items: center;">
-                <div class="logo-main">🛡️ YOUTH AGAINST DRUGS</div>
-                <div class="logo-sub">Youth Pledge & Awareness Campaign</div>
+                <span class="logo-main">🛡️ YOUTH AGAINST DRUGS</span>
+                <span class="logo-sub">PLEDGE CAMPAIGN</span>
             </div>
         </div>
     </header>
 
     <!-- Main Pledge Layout -->
-    <main class="container" style="max-width: 650px; padding: 40px 24px; text-align: center;">
+    <main class="container" style="max-width: 700px; padding: 0 24px; text-align: center;">
         
         <!-- Loading State -->
-        <div id="pledge-loading-card" style="padding: 40px 0;">
+        <div id="pledge-loading-card" style="padding: 80px 0;">
             <div class="spinner" style="margin: 0 auto;"></div>
-            <p style="margin-top: 16px; color: var(--text-muted);">Preparing your pledge journey...</p>
+            <p style="margin-top: 24px; color: var(--text-muted); font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Preparing your pledge journey...</p>
         </div>
 
         <!-- Pledge Card -->
-        <div id="pledge-main-card" style="display: none;">
+        <div id="pledge-main-card" class="pledge-card fade-in" style="display: none;">
             <!-- Step Tracker -->
             <div class="progress-container">
                 <div class="progress-header">
@@ -41,18 +88,18 @@
                 </div>
             </div>
 
-            <h2 id="pledge-title-lbl" style="font-size: 28px; margin-top: 24px; margin-bottom: 8px;">Anti-Drug Pledge</h2>
-            <p style="margin-bottom: 32px; font-size: 15px;">
+            <h2 id="pledge-title-lbl" style="font-size: 32px; margin-top: 16px; margin-bottom: 12px; font-weight: 800;">Anti-Drug Pledge</h2>
+            <p style="margin-bottom: 40px; font-size: 15px; color: var(--text-muted);">
                 Listen to the full narration of all three pledges sequentially to complete your campaign pledge.
             </p>
 
             <!-- Flat Reading Area -->
-            <div id="pledge-text-container" style="font-size: 22px; font-family: var(--font-serif); line-height: 1.6; text-align: left; margin-bottom: 32px; min-height: 120px;">
+            <div id="pledge-text-container" class="pledge-text-area">
                 <!-- Word spans injected here -->
             </div>
 
             <!-- Voice Reading Area (visualizer and buttons) -->
-            <div class="audio-visualizer-bar" id="audio-visualizer" style="margin-bottom: 16px;">
+            <div class="audio-visualizer-bar" id="audio-visualizer">
                 <div class="visualizer-node"></div>
                 <div class="visualizer-node"></div>
                 <div class="visualizer-node"></div>
@@ -63,56 +110,54 @@
             </div>
 
             <!-- Voice Controls -->
-            <div id="voice-controls-section" style="margin-bottom: 24px; display: flex; justify-content: center; gap: 12px; align-items: center; flex-wrap: wrap;">
+            <div id="voice-controls-section" style="margin-bottom: 32px; display: flex; justify-content: center; gap: 12px; align-items: center; flex-wrap: wrap;">
                 <button id="btn-play-voice" class="btn btn-secondary btn-md">
-                    ▶ Play
+                    <i data-lucide="play" style="width: 14px; height: 14px;"></i> Play
                 </button>
                 <button id="btn-pause-voice" class="btn btn-secondary btn-md" style="display: none;">
-                    ⏸ Pause
+                    <i data-lucide="pause" style="width: 14px; height: 14px;"></i> Pause
                 </button>
                 <button id="btn-resume-voice" class="btn btn-secondary btn-md" style="display: none;">
-                    ▶ Resume
+                    <i data-lucide="play-circle" style="width: 14px; height: 14px;"></i> Resume
                 </button>
                 <button id="btn-stop-voice" class="btn btn-secondary btn-md" style="display: none;">
-                    ⏹ Stop
+                    <i data-lucide="square" style="width: 14px; height: 14px;"></i> Stop
                 </button>
                 <button id="btn-restart-voice" class="btn btn-secondary btn-md" style="display: none;">
-                    🔄 Restart
+                    <i data-lucide="rotate-ccw" style="width: 14px; height: 14px;"></i> Restart
                 </button>
             </div>
 
             <!-- Non-blocking Voice Fallback Message -->
-            <div id="speech-info-msg" style="display: none; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); color: var(--text-muted); padding: 12px 16px; border-radius: var(--border-radius); font-size: 13px; margin-bottom: 24px; text-align: left; line-height: 1.4;">
+            <div id="speech-info-msg" style="display: none; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); color: var(--text-muted); padding: 16px 20px; border-radius: var(--border-radius-sm); font-size: 13px; margin-bottom: 32px; text-align: left; line-height: 1.5;">
                 <!-- Info notice injected here -->
             </div>
 
             <!-- Acceptance Box -->
-            <div style="text-align: left; margin-bottom: 24px;">
-                <div style="display: flex; gap: 12px; align-items: flex-start;">
-                    <input type="checkbox" id="pledge-chk" style="width: 20px; height: 20px; accent-color: var(--primary); cursor: pointer; margin-top: 2px;">
-                    <label for="pledge-chk" style="font-family: var(--font-dashboard); font-size: 14px; font-weight: 600; color: var(--text-muted); cursor: pointer; user-select: none; line-height: 1.4;">
-                        I have read and understood this pledge.
-                    </label>
-                </div>
+            <div class="checkbox-container">
+                <input type="checkbox" id="pledge-chk" style="width: 20px; height: 20px; accent-color: var(--primary); cursor: pointer; margin-top: 2px;">
+                <label for="pledge-chk" style="font-size: 14px; font-weight: 600; color: var(--text-muted); cursor: pointer; user-select: none; line-height: 1.4;">
+                    I have read, understood and commit myself to this pledge.
+                </label>
             </div>
 
-            <button id="pledge-btn" class="btn btn-primary btn-md" style="width: 100%;" disabled>
-                Continue to Next Step ➡️
+            <button id="pledge-btn" class="btn btn-primary btn-md" style="width: 100%; border-radius: var(--border-radius-sm);" disabled>
+                Continue to Next Step <i data-lucide="arrow-right" style="width: 18px; height: 18px;"></i>
             </button>
         </div>
 
         <!-- POST-PLEDGE REGISTRATION VIEW -->
-        <div id="pledge-registration-card" style="display: none; text-align: left;">
-            <h2 style="font-size: 28px; margin-bottom: 8px; text-align: center; color: var(--primary);">Pledge Completed! 🎉</h2>
-            <p style="margin-bottom: 32px; font-size: 15px; text-align: center; color: var(--text-muted);">
-                Please complete your details to claim and issue your verified anti-drug awareness certificate.
+        <div id="pledge-registration-card" class="pledge-card fade-in" style="display: none; text-align: left;">
+            <h2 style="font-size: 32px; margin-bottom: 12px; text-align: center; color: var(--primary); font-weight: 800;">Pledge Completed! 🎉</h2>
+            <p style="margin-bottom: 40px; font-size: 15px; text-align: center; color: var(--text-muted);">
+                Please complete your details to claim and issue your verified campaign achievement certificate.
             </p>
 
             <form id="post-pledge-registration-form">
                 
                 <div class="form-group">
                     <label class="form-label" for="reg-name">Full Name</label>
-                    <input type="text" id="reg-name" class="form-control" readonly style="opacity: 0.8; background-color: var(--bg-dark);">
+                    <input type="text" id="reg-name" class="form-control" readonly style="opacity: 0.6; background-color: rgba(255, 255, 255, 0.01);">
                 </div>
 
                 <div class="form-group">
@@ -130,8 +175,8 @@
                     <input type="text" id="reg-college" class="form-control" placeholder="Name of your college/university" required>
                 </div>
 
-                <button type="submit" class="btn btn-primary btn-md" style="width: 100%; margin-top: 16px; padding: 12px; font-size: 16px;">
-                    Register & Generate Certificate 🎓
+                <button type="submit" class="btn btn-primary btn-md" style="width: 100%; margin-top: 24px; padding: 14px; font-size: 16px; border-radius: var(--border-radius-sm);">
+                    Register & Generate Certificate <i data-lucide="award" style="width: 18px; height: 18px;"></i>
                 </button>
             </form>
         </div>
@@ -143,7 +188,26 @@
         <p>© 2026 Youth Against Drugs Campaign</p>
     </footer>
 
-    <!-- Page Script -->
+    <!-- Shared Microinteractions & Cursor spotlight script -->
+    <script>
+        lucide.createIcons();
+
+        // Mouse Spotlight Glow Coordinator
+        document.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth) * 100;
+            const y = (e.clientY / window.innerHeight) * 100;
+            document.documentElement.style.setProperty('--mouse-x', `${x}%`);
+            document.documentElement.style.setProperty('--mouse-y', `${y}%`);
+        });
+
+        // GSAP page load
+        gsap.from(".fade-in", {
+            opacity: 0,
+            y: 40,
+            duration: 1,
+            ease: "power3.out"
+        });
+    </script>
     <script type="module" src="js/pages/pledge.js?v=5"></script>
 </body>
 </html>

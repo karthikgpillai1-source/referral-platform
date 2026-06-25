@@ -5,33 +5,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Campaign Pledge - Youth Against Drugs</title>
     <link rel="stylesheet" href="css/style.css">
+    <!-- Premium Fonts & Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Animation Libraries CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
+    <style>
+        .register-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            padding: 48px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            margin-top: 64px;
+        }
+    </style>
 </head>
 <body>
 
     <!-- Header -->
     <header>
-        <div class="container navbar" style="justify-content: center;">
+        <div class="navbar" style="justify-content: center;">
             <div class="logo-container" style="align-items: center;">
-                <div class="logo-main">🛡️ YOUTH AGAINST DRUGS</div>
-                <div class="logo-sub">Youth Pledge & Outreach Campaign</div>
+                <span class="logo-main">🛡️ YOUTH AGAINST DRUGS</span>
+                <span class="logo-sub">PLEDGE REGISTRATION</span>
             </div>
         </div>
     </header>
 
     <!-- Centered Form Container -->
-    <main class="container" style="max-width: 650px; padding: 40px 24px;">
+    <main class="container" style="max-width: 600px; padding: 0 24px;">
 
         <!-- NAME COLLECTION VIEW -->
-        <div id="step-name-container" style="text-align: center; padding: 20px 0;">
-            <h2 style="font-size: 32px; margin-bottom: 8px;">Take the Pledge</h2>
-            <p style="margin-bottom: 36px; font-size: 16px;">What is your full name?</p>
+        <div class="register-card fade-in">
+            <h2 style="font-size: 36px; margin-bottom: 12px; font-weight: 800;">Take the Pledge</h2>
+            <p style="margin-bottom: 40px; font-size: 15px; color: var(--text-muted);">Please provide your full name as you wish it to appear on your verified campaign certificate.</p>
 
-            <div class="form-group" style="margin-bottom: 32px; max-width: 500px; margin-left: auto; margin-right: auto;">
-                <input type="text" id="collect-name-input" class="form-control" placeholder="Enter your full name" style="padding: 16px; font-size: 18px; text-align: center;" required minlength="3" maxlength="100" autocomplete="off">
+            <div class="form-group" style="margin-bottom: 32px; max-width: 450px; margin-left: auto; margin-right: auto; position: relative;">
+                <input type="text" id="collect-name-input" class="form-control" placeholder="Enter your full name" style="padding: 18px; font-size: 16px; text-align: center; border-radius: var(--border-radius-sm);" required minlength="3" maxlength="100" autocomplete="off">
             </div>
 
-            <button type="button" id="btn-continue-name" class="btn btn-primary btn-md" style="width: 100%; max-width: 500px; padding: 14px; font-size: 16px;">
-                Continue to Pledges ➡️
+            <button type="button" id="btn-continue-name" class="btn btn-primary btn-md" style="width: 100%; max-width: 450px; padding: 14px; font-size: 16px; border-radius: var(--border-radius-sm);">
+                Continue to Pledges <i data-lucide="arrow-right" style="width: 18px; height: 18px;"></i>
             </button>
         </div>
 
@@ -42,7 +58,26 @@
         <p>© 2026 Youth Against Drugs Campaign</p>
     </footer>
 
-    <!-- Page script -->
+    <!-- Shared Microinteractions & Cursor spotlight script -->
+    <script>
+        lucide.createIcons();
+
+        // Mouse Spotlight Glow Coordinator
+        document.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth) * 100;
+            const y = (e.clientY / window.innerHeight) * 100;
+            document.documentElement.style.setProperty('--mouse-x', `${x}%`);
+            document.documentElement.style.setProperty('--mouse-y', `${y}%`);
+        });
+
+        // GSAP page load
+        gsap.from(".fade-in", {
+            opacity: 0,
+            y: 40,
+            duration: 1,
+            ease: "power3.out"
+        });
+    </script>
     <script type="module" src="js/pages/register.js?v=5"></script>
 </body>
 </html>
