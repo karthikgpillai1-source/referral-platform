@@ -1,4 +1,5 @@
 import { DatabaseService } from '../services/supabase.js';
+import { ReferralService } from '../services/referral.js';
 import { Utils } from '../utils.js';
 
 // Dedicated stats data structure for easy customization
@@ -10,6 +11,13 @@ const CAMPAIGN_STATS = [
 ];
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Capture referral code if visiting via referral link
+    const referrer = ReferralService.getReferrerFromURL();
+    if (referrer) {
+        sessionStorage.setItem('referred_by', referrer);
+        console.log(`[Referral Tracking] Stored referrer: ${referrer}`);
+    }
+
     initStats();
     initLeaderboard();
     initVerifyForm();

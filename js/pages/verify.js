@@ -69,7 +69,7 @@ async function verifyCertificate(certId) {
             setupCopyButton('copy-ref-link-btn', refLink, 'Referral invitation link copied!');
 
             // Configure Combined sharing & button handlers
-            setupCertificateSharing(verificationUrl, refLink);
+            setupCombinedSharing(verificationUrl, refLink);
 
             // Configure PDF download button
             const downloadBtn = document.getElementById('download-pdf-btn');
@@ -94,17 +94,19 @@ async function verifyCertificate(certId) {
     }
 }
 
-function setupCertificateSharing(verificationUrl, refLink) {
-    // Configurable campaign message layout
+function setupCombinedSharing(verificationUrl, refLink) {
+    // Inspiring message matches exact user request format
     const textMessage = 
 `I have proudly completed the Youth Against Drugs Campaign and taken my pledge for a drug-free future.
 
-This certificate represents my commitment to building a healthier and safer society.
+Here is my campaign certificate.
 
-I invite you to join this movement and take your own pledge using my personal invitation below.
+I invite you to join this movement by taking your own pledge.
+
+Use my personal invitation link below:
 ${refLink}
 
-Together, we can inspire a drug-free generation.`;
+Together we can build a healthier and drug-free society.`;
 
     // Social Share buttons bindings
     const waShare = document.getElementById('share-cert-wa');
@@ -138,7 +140,6 @@ Together, we can inspire a drug-free generation.`;
                     text: textMessage
                 }).catch(err => console.log('Share failed:', err));
             } else {
-                // Fallback: smooth scroll to sharing panel
                 const sharePanel = document.getElementById('cert-sharing-panel');
                 if (sharePanel) {
                     sharePanel.scrollIntoView({ behavior: 'smooth' });
