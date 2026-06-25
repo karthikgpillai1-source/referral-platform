@@ -2,16 +2,326 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="0; url=register">
-    <title>Redirecting...</title>
-    <script>
-        // Forward query params (like ref codes or event configurations) to registration
-        window.location.replace("register" + window.location.search);
-    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Youth Against Drugs Campaign - Build a Drug-Free Generation</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        /* Landing page custom premium visual styles */
+        .hero-section {
+            padding: 80px 0 60px;
+            text-align: center;
+            background: radial-gradient(circle at center, rgba(16, 185, 129, 0.08) 0%, transparent 70%);
+        }
+        .hero-title {
+            font-size: 48px;
+            line-height: 1.2;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #ffffff 40%, #a7f3d0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero-subtitle {
+            font-size: 20px;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto 32px;
+            line-height: 1.6;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 50px;
+        }
+        .info-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 24px;
+            transition: var(--transition-fast);
+        }
+        .info-card:hover {
+            border-color: rgba(16, 185, 129, 0.3);
+            transform: translateY(-2px);
+        }
+        .info-card-icon {
+            font-size: 28px;
+            margin-bottom: 16px;
+            display: inline-block;
+        }
+        .info-card-title {
+            font-family: var(--font-dashboard);
+            font-size: 18px;
+            color: #ffffff;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .stats-section {
+            background: #111827;
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+            padding: 48px 0;
+            margin: 40px 0;
+        }
+        .stats-grid-landing {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+            text-align: center;
+        }
+        .stat-card-landing {
+            padding: 16px;
+        }
+        .stat-num-landing {
+            font-size: 40px;
+            font-weight: 800;
+            color: var(--primary);
+            font-family: var(--font-dashboard);
+            margin-bottom: 8px;
+        }
+        .stat-lbl-landing {
+            font-size: 14px;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .responsibility-section {
+            margin: 60px 0;
+        }
+        .section-header-center {
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto 40px;
+        }
+        .timeline-card {
+            display: flex;
+            gap: 20px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            padding: 24px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            text-align: left;
+        }
+        .timeline-num {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--primary);
+            font-family: var(--font-mono);
+            min-width: 40px;
+        }
+
+        .cta-box {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            padding: 48px 32px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 60px 0;
+        }
+
+        .leaderboard-section {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            padding: 32px;
+            border-radius: 8px;
+            margin-bottom: 40px;
+        }
+        .leaderboard-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+        }
+        .leaderboard-rank {
+            font-family: var(--font-mono);
+            color: var(--primary);
+            font-weight: 700;
+            width: 40px;
+        }
+        .leaderboard-name {
+            flex: 1;
+            font-weight: 600;
+            color: #ffffff;
+            text-align: left;
+        }
+        .leaderboard-count {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+    </style>
 </head>
 <body>
-    <p style="text-align: center; margin-top: 50px; font-family: sans-serif; color: #94a3b8;">
-        Redirecting to registration...
-    </p>
+
+    <!-- Header -->
+    <header>
+        <div class="container navbar">
+            <div class="logo-container">
+                <div class="logo-main">🛡️ YOUTH AGAINST DRUGS</div>
+                <div class="logo-sub">Youth Pledge & Outreach Campaign</div>
+            </div>
+            <div class="nav-actions">
+                <a href="verify" class="btn btn-secondary btn-sm">Verify Certificate</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        
+        <!-- Hero Campaign Section -->
+        <section class="hero-section">
+            <h1 class="hero-title">Youth Against Drugs</h1>
+            <p class="hero-subtitle">Together We Can Build a Drug-Free Generation</p>
+            <a href="register" class="btn btn-primary btn-md" style="padding: 14px 28px; font-size: 16px;">
+                Take the Pledge 🤝
+            </a>
+        </section>
+
+        <!-- Stats Counter Section -->
+        <section class="stats-section">
+            <div class="container">
+                <div class="stats-grid-landing" id="campaign-stats-container">
+                    <!-- Statistics injected dynamically from JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Information/Education Cards Section -->
+        <section style="margin: 60px 0;">
+            <div class="section-header-center">
+                <h2>Understand the Challenge</h2>
+                <p>Knowledge is our first line of defense. Learn about the impact of drug abuse on individuals and communities.</p>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-card">
+                    <span class="info-card-icon">🇮🇳</span>
+                    <h3 class="info-card-title">Drug Abuse in India</h3>
+                    <p style="font-size: 14px;">Millions of lives are impacted by illicit drug use nationwide, affecting health, productivity, and the future potential of youth.</p>
+                </div>
+                <div class="info-card">
+                    <span class="info-card-icon">🌴</span>
+                    <h3 class="info-card-title">Drug Abuse in Kerala</h3>
+                    <p style="font-size: 14px;">Outreach campaigns are vital in Kerala's campuses to prevent substance abuse, support peer guidelines, and encourage healthy living.</p>
+                </div>
+                <div class="info-card">
+                    <span class="info-card-icon">🎓</span>
+                    <h3 class="info-card-title">Effects on Students</h3>
+                    <p style="font-size: 14px;">Substance dependency disrupts academic performance, mental stability, interpersonal relationships, and professional prospects.</p>
+                </div>
+                <div class="info-card">
+                    <span class="info-card-icon">🏠</span>
+                    <h3 class="info-card-title">Effects on Families</h3>
+                    <p style="font-size: 14px;">Families carry severe emotional, psychological, and financial burdens when members struggle with addiction issues.</p>
+                </div>
+                <div class="info-card">
+                    <span class="info-card-icon">🧠</span>
+                    <h3 class="info-card-title">Mental & Physical Health</h3>
+                    <p style="font-size: 14px;">Addiction triggers serious health consequences, including cognitive impairment, anxiety, depression, and physical deterioration.</p>
+                </div>
+                <div class="info-card">
+                    <span class="info-card-icon">⚖️</span>
+                    <h3 class="info-card-title">Crime and Society</h3>
+                    <p style="font-size: 14px;">Drug networks fuel local crime, disrupt neighborhood safety, and drain community healthcare and law enforcement resources.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Responsibility & Action Section -->
+        <section class="responsibility-section">
+            <div class="section-header-center">
+                <h2>Our Shared Responsibility</h2>
+                <p>Building a drug-free community requires coordinated action between the administration, society, and our youth.</p>
+            </div>
+
+            <div style="max-width: 800px; margin: 0 auto;">
+                <div class="timeline-card">
+                    <div class="timeline-num">01</div>
+                    <div>
+                        <h4 style="font-weight:700; font-size:16px; margin-bottom:4px; color:#ffffff;">Government & Community Duty</h4>
+                        <p style="font-size:14px; margin-bottom:0;">Strengthening campus enforcement, developing accessible rehabilitation facilities, and organizing large-scale public safety initiatives.</p>
+                    </div>
+                </div>
+
+                <div class="timeline-card">
+                    <div class="timeline-num">02</div>
+                    <div>
+                        <h4 style="font-weight:700; font-size:16px; margin-bottom:4px; color:#ffffff;">Youth Leadership & Peer Support</h4>
+                        <p style="font-size:14px; margin-bottom:0;">Creating supportive environments in classrooms, checking on classmates, and serving as advocates for positive lifestyles.</p>
+                    </div>
+                </div>
+
+                <div class="timeline-card">
+                    <div class="timeline-num">03</div>
+                    <div>
+                        <h4 style="font-weight:700; font-size:16px; margin-bottom:4px; color:#ffffff;">Individual Action</h4>
+                        <p style="font-size:14px; margin-bottom:0;">Taking the anti-drug pledge, spreading awareness to at least 3 friends, and helping connect those in need to professional medical advice.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Campaign Leaderboard Section -->
+        <section class="leaderboard-section">
+            <h3 style="font-size: 22px; color: var(--primary); text-align: center; margin-bottom: 8px;">🏆 Outreach Leaders</h3>
+            <p style="text-align: center; margin-bottom: 24px;">Recognizing students who have inspired the most peers to take the pledge.</p>
+            
+            <div id="leaderboard-loading" style="text-align: center; padding: 20px;">
+                <div class="spinner" style="margin: 0 auto;"></div>
+            </div>
+            
+            <div id="leaderboard-empty" style="display: none; text-align: center; color: var(--text-muted); padding: 20px;">
+                No outreach registrations tracked yet.
+            </div>
+
+            <div class="leaderboard-list" id="leaderboard-list">
+                <!-- Top referrers dynamically injected -->
+            </div>
+        </section>
+
+        <!-- Verification Redirect Form -->
+        <section class="flat-card" style="margin-bottom: 40px;">
+            <h3 style="font-size: 20px; color: #ffffff; margin-bottom: 8px;">🔍 Verify Campaign Certificate</h3>
+            <p style="margin-bottom: 16px; font-size: 14px;">Enter a certificate identifier to verify its validity and check the participant's commitment details.</p>
+            <form id="landing-verify-form" style="display: flex; gap: 12px; flex-wrap: wrap;">
+                <input type="text" id="verify-cert-id" class="form-control" placeholder="CERT-2026-000001" required style="flex: 1; min-width: 250px;">
+                <button type="submit" class="btn btn-secondary">Verify Credential</button>
+            </form>
+        </section>
+
+        <!-- Call to Action Box -->
+        <section class="cta-box">
+            <h2 style="font-size: 32px; margin-bottom: 8px;">Join the Movement</h2>
+            <p style="font-size: 16px; color:#ffffff; margin-bottom: 24px; max-width: 500px; margin-left: auto; margin-right: auto;">
+                Your pledge today can inspire tomorrow. Commit to a drug-free future and nominate your friends to expand the reach.
+            </p>
+            <a href="register" class="btn btn-primary btn-md" style="padding: 12px 32px; font-size: 16px;">
+                Take the Pledge Now
+            </a>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2026 Youth Against Drugs Campaign</p>
+    </footer>
+
+    <!-- Page Script -->
+    <script type="module" src="js/pages/landing.js?v=4"></script>
 </body>
 </html>

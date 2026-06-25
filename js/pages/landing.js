@@ -1,10 +1,37 @@
 import { DatabaseService } from '../services/supabase.js';
 import { Utils } from '../utils.js';
 
+// Dedicated stats data structure for easy customization
+const CAMPAIGN_STATS = [
+    { num: '34M+', label: 'Affected in India', desc: 'Substance abuse estimate' },
+    { num: '60%', label: 'Youth Target Area', desc: 'Ages 12-25 vulnerability peak' },
+    { num: '95%', label: 'Outreach Target', desc: 'Aim for campus level awareness' },
+    { num: '100%', label: 'Youth Commitment', desc: 'Building a clean society' }
+];
+
 document.addEventListener('DOMContentLoaded', () => {
+    initStats();
     initLeaderboard();
     initVerifyForm();
 });
+
+// Render dynamic campaign stats
+function initStats() {
+    const container = document.getElementById('campaign-stats-container');
+    if (!container) return;
+    container.innerHTML = '';
+
+    CAMPAIGN_STATS.forEach(stat => {
+        const div = document.createElement('div');
+        div.className = 'stat-card-landing';
+        div.innerHTML = `
+            <div class="stat-num-landing">${stat.num}</div>
+            <div class="stat-lbl-landing">${stat.label}</div>
+            <div style="font-size:12px; color: var(--text-muted); margin-top:4px;">${stat.desc}</div>
+        `;
+        container.appendChild(div);
+    });
+}
 
 // Load and render top referrers
 async function initLeaderboard() {

@@ -10,6 +10,88 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <style>
+        /* Custom social share panel styles */
+        .share-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px;
+            margin: 20px 0;
+        }
+        .share-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px;
+            border-radius: 6px;
+            font-family: var(--font-dashboard);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            color: #ffffff;
+            transition: var(--transition-fast);
+            border: none;
+        }
+        .share-btn-wa { background-color: #25D366; }
+        .share-btn-wa:hover { background-color: #20ba5a; }
+        
+        .share-btn-fb { background-color: #1877F2; }
+        .share-btn-fb:hover { background-color: #166fe5; }
+        
+        .share-btn-x { background-color: #000000; border: 1px solid #333333; }
+        .share-btn-x:hover { background-color: #111111; }
+        
+        .share-btn-tg { background-color: #0088cc; }
+        .share-btn-tg:hover { background-color: #0077b5; }
+        
+        .share-btn-email { background-color: #ea4335; }
+        .share-btn-email:hover { background-color: #d93025; }
+
+        .share-btn-native { background-color: var(--primary); }
+        .share-btn-native:hover { background-color: #059669; }
+
+        .ref-box-premium {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 24px;
+            margin-top: 32px;
+        }
+        
+        .ref-layout {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .ref-content {
+            flex: 1;
+            min-width: 280px;
+        }
+        .ref-qr-wrapper {
+            background: #ffffff;
+            padding: 12px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 144px;
+            min-height: 144px;
+        }
+
+        .congrats-header {
+            margin-bottom: 32px;
+            animation: fadeIn 0.8s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
 <body>
 
@@ -28,13 +110,22 @@
         
         <!-- Loading State -->
         <div id="verify-loading" style="display: block; margin: 40px auto;">
-            <div class="spinner"></div>
-            <p style="margin-top: 16px;">Verifying credential authenticity...</p>
+            <div class="spinner" style="margin: 0 auto;"></div>
+            <p style="margin-top: 16px; color: var(--text-muted);">Verifying credential authenticity...</p>
         </div>
 
         <!-- Success/Valid State -->
         <div id="verify-success-container" style="display: none;">
             
+            <!-- STEP 5: CELEBRATION HEADER -->
+            <div class="congrats-header" id="celebration-banner" style="display: none;">
+                <h1 style="font-family: var(--font-serif); font-size: 36px; margin-bottom: 8px; color:#ffffff;">Congratulations, <span id="congrats-name" style="color:var(--primary);">Rahul</span>!</h1>
+                <p style="font-size: 16px; max-width: 600px; margin: 0 auto 20px; line-height:1.5;">
+                    You are now officially part of the Youth Against Drugs Campaign. Your commitment is verified and recorded below.
+                </p>
+                <div style="font-size:24px; animation: bounce 2s infinite; margin-bottom: 12px;">🎉 🎓 🛡️</div>
+            </div>
+
             <div class="badge badge-success" style="font-size: 14px; padding: 6px 16px; margin-bottom: 24px;">
                 ✓ Official Verified Campaign Certificate
             </div>
@@ -79,26 +170,62 @@
                 </div>
             </div>
 
-            <!-- Download and Share buttons -->
-            <div style="display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; margin-bottom: 32px;">
-                <button id="download-pdf-btn" class="btn btn-primary">
+            <!-- Actions Panel -->
+            <div style="margin-top: 24px; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
+                <button id="download-pdf-btn" class="btn btn-primary" style="padding: 12px 24px;">
                     Download PDF Certificate 📥
                 </button>
-                <a href="#" id="share-cert-wa-btn" target="_blank" class="btn btn-whatsapp">
-                    Share My Certificate 💬
-                </a>
+                <button id="btn-share-native-cert" class="btn btn-secondary" style="padding: 12px 24px; display: none;">
+                    Share Certificate 🔗
+                </button>
             </div>
 
-            <!-- Referral Link display -->
-            <div style="max-width: 600px; margin: 32px auto 0; text-align: left;">
-                <h3 style="font-size: 22px; color: var(--primary); margin-bottom: 8px;">🌟 Track Your Outreach Referrals</h3>
-                <p style="margin-bottom: 12px;">
-                    Share your custom referral link with other peers. Your outreach ranking increases as they complete the pledges.
+            <!-- Modern Certificate Sharing Panel -->
+            <div style="max-width: 600px; margin: 32px auto 0; text-align: left;" id="cert-sharing-panel">
+                <h4 style="font-size: 16px; color: var(--text-muted); text-transform: uppercase; font-family: var(--font-dashboard); margin-bottom: 8px;">Share Certificate</h4>
+                <div class="share-grid">
+                    <a href="#" id="share-cert-wa" target="_blank" class="share-btn share-btn-wa">💬 WhatsApp</a>
+                    <a href="#" id="share-cert-fb" target="_blank" class="share-btn share-btn-fb">🔵 Facebook</a>
+                    <a href="#" id="share-cert-x" target="_blank" class="share-btn share-btn-x">⚫ X (Twitter)</a>
+                    <a href="#" id="share-cert-tg" target="_blank" class="share-btn share-btn-tg">✈️ Telegram</a>
+                    <a href="#" id="share-cert-email" target="_blank" class="share-btn share-btn-email">✉️ Email</a>
+                </div>
+            </div>
+
+            <!-- Referral Outreach Section -->
+            <div class="ref-box-premium" style="max-width: 700px; margin: 40px auto 0; text-align: left;">
+                <h3 style="font-size: 22px; color: var(--primary); margin-bottom: 8px;">🌟 Help Grow This Movement</h3>
+                <p style="margin-bottom: 24px; color: var(--text-muted);">
+                    Invite your friends to take the pledge and join the campaign. Your ranking increases as they complete their pledge journey!
                 </p>
-                <div class="form-group" style="margin-bottom: 0;">
-                    <div style="display: flex; gap: 8px;">
-                        <input type="text" id="share-referral-link" class="form-control" readonly style="font-size: 14px;">
-                        <button class="btn btn-secondary btn-md" id="copy-ref-link-btn" style="text-transform:none; white-space: nowrap;">Copy Link</button>
+                
+                <div class="ref-layout">
+                    <!-- Referral details -->
+                    <div class="ref-content">
+                        <div class="form-group" style="margin-bottom: 16px;">
+                            <label class="form-label" style="font-size: 12px;">Your Personal Referral Link</label>
+                            <div style="display: flex; gap: 8px;">
+                                <input type="text" id="share-referral-link" class="form-control" readonly style="font-size: 14px;">
+                                <button class="btn btn-secondary btn-sm" id="copy-ref-link-btn" style="text-transform:none; white-space: nowrap;">Copy Link</button>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 12px;">
+                            <label class="form-label" style="font-size: 12px; margin-bottom: 8px;">Share Invitation Link</label>
+                            <div class="share-grid" style="margin: 0;">
+                                <a href="#" id="share-ref-wa" target="_blank" class="share-btn share-btn-wa" style="padding: 8px; font-size:12px;">💬 WhatsApp</a>
+                                <a href="#" id="share-ref-tg" target="_blank" class="share-btn share-btn-tg" style="padding: 8px; font-size:12px;">✈️ Telegram</a>
+                                <a href="#" id="share-ref-email" target="_blank" class="share-btn share-btn-email" style="padding: 8px; font-size:12px;">✉️ Email</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- QR code generator wrapper -->
+                    <div style="text-align: center;">
+                        <div class="ref-qr-wrapper" id="referral-qr-container">
+                            <!-- Rendered dynamically -->
+                        </div>
+                        <span style="font-size: 11px; color: var(--text-muted); display: block; margin-top: 8px; font-family:var(--font-dashboard);">Scan QR to Register</span>
                     </div>
                 </div>
             </div>
@@ -127,6 +254,6 @@
     </footer>
 
     <!-- Page Script -->
-    <script type="module" src="js/pages/verify.js?v=3"></script>
+    <script type="module" src="js/pages/verify.js?v=4"></script>
 </body>
 </html>

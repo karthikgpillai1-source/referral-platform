@@ -13,7 +13,56 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 2. Handle form submission
+    // 2. Handle Name Collection (Step 1)
+    const btnContinueName = document.getElementById('btn-continue-name');
+    const collectNameInput = document.getElementById('collect-name-input');
+    const stepNameContainer = document.getElementById('step-name-container');
+    const stepDetailsContainer = document.getElementById('step-details-container');
+    const partNameInput = document.getElementById('part-name');
+    const welcomeLabel = document.getElementById('personalized-welcome-lbl');
+
+    if (btnContinueName && collectNameInput) {
+        btnContinueName.addEventListener('click', () => {
+            const name = collectNameInput.value.trim();
+            if (name.length < 3 || name.length > 100) {
+                Utils.showToast('Please enter a valid name (3 to 100 characters).', 'error');
+                return;
+            }
+
+            // Save to session storage
+            sessionStorage.setItem('part_full_name', name);
+
+            // Populate and switch view
+            partNameInput.value = name;
+            const firstName = name.split(/\s+/)[0];
+            const capitalizedFirstName = firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
+            welcomeLabel.textContent = `Welcome, ${capitalizedFirstName}!`;
+
+            stepNameContainer.style.display = 'none';
+            stepDetailsContainer.style.display = 'block';
+        });
+
+        // Add Enter key listener to input
+        collectNameInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                btnContinueName.click();
+            }
+        });
+    }
+
+    // Check if name is already stored (on reload/back)
+    const storedName = sessionStorage.getItem('part_full_name');
+    if (storedName && stepNameContainer && stepDetailsContainer && partNameInput && welcomeLabel) {
+        partNameInput.value = storedName;
+        const firstName = storedName.split(/\s+/)[0];
+        const capitalizedFirstName = firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
+        welcomeLabel.textContent = `Welcome, ${capitalizedFirstName}!`;
+
+        stepNameContainer.style.display = 'none';
+        stepDetailsContainer.style.display = 'block';
+    }
+
+    // 3. Handle Form Submission
     const form = document.getElementById('campaign-registration-form');
     if (form) {
         form.addEventListener('submit', handleRegisterSubmit);
@@ -23,7 +72,6 @@ document.addEventListener('DOMContentLoaded', () => {
 // Indian Mobile Number Validator and Standardizer
 function standardizeIndianPhone(phone) {
     const clean = phone.replace(/[\s-()]/g, '');
-    // Matches optional +91, 91, or 0, followed by a digit from 6-9 and then 9 digits.
     const match = clean.match(/^(?:\+?91|0)?([6-9]\d{9})$/);
     if (!match) return null;
     return '+91' + match[1]; // Standardize to +91XXXXXXXXXX
@@ -124,6 +172,9 @@ async function handleRegisterSubmit(e) {
 
         Utils.showLoading(false);
         Utils.showToast('Registration successful! Redirecting to pledge...', 'success');
+
+        // Clear local session storage name to avoid pre-populating on next fresh user load
+        sessionStorage.removeItem('part_full_name');
 
         // Redirect immediately to pledge screen
         setTimeout(() => {

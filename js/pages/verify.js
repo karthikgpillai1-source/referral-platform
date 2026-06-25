@@ -44,25 +44,28 @@ async function verifyCertificate(certId) {
             document.getElementById('cert-id-lbl').textContent = certData.certificate_id;
             document.getElementById('cert-date-lbl').textContent = Utils.formatDate(certData.issue_date);
 
+            // Show personalized celebration banner
+            const congratsNameEl = document.getElementById('congrats-name');
+            if (congratsNameEl) {
+                const firstName = participant.full_name.trim().split(/\s+/)[0];
+                congratsNameEl.textContent = firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
+            }
+            document.getElementById('celebration-banner').style.display = 'block';
+
             // Fetch active event if exists
             const events = await DatabaseService.getEvents();
             if (events && events.length > 0) {
                 document.getElementById('cert-event').textContent = events[0].event_name;
             }
 
-            // Render QR Code
+            // Render Certificate QR Code (embeds verification link)
             const verificationUrl = `${window.location.origin}/verify?id=${certData.certificate_id}`;
             CertificateService.renderQRCode('cert-qr-container', verificationUrl);
 
-            // Setup WhatsApp share button
-            const waShareBtn = document.getElementById('share-cert-wa-btn');
-            if (waShareBtn) {
-                const waText = `I have taken the Youth Against Drugs Pledge and received my official verified certificate! Join the movement and pledge here: ${window.location.origin}/register?ref=${participant.referral_code}`;
-                const waUrl = `https://wa.me/?text=${encodeURIComponent(waText)}`;
-                waShareBtn.setAttribute('href', waUrl);
-            }
+            // Configure Certificate Social Sharing Panel
+            setupCertificateSharing(certData.certificate_id, verificationUrl, participant.full_name);
 
-            // Setup Referral Link Display
+            // Setup Referral Link Display, sharing & QR Code
             const refLink = ReferralService.generateReferralLink(participant.referral_code);
             const refInput = document.getElementById('share-referral-link');
             if (refInput) {
@@ -70,11 +73,14 @@ async function verifyCertificate(certId) {
             }
 
             setupCopyButton('copy-ref-link-btn', refLink, 'Referral link copied!');
+            setupReferralSharing(refLink, participant.full_name);
 
             // Configure PDF download button
             const downloadBtn = document.getElementById('download-pdf-btn');
             if (downloadBtn) {
-                downloadBtn.addEventListener('click', () => {
+                const newDownloadBtn = downloadBtn.cloneNode(true);
+                downloadBtn.parentNode.replaceChild(newDownloadBtn, downloadBtn);
+                newDownloadBtn.addEventListener('click', () => {
                     CertificateService.exportToPDF('cert-pdf-target', `certificate-${certData.certificate_id}.pdf`);
                 });
             }
@@ -89,6 +95,80 @@ async function verifyCertificate(certId) {
         console.error('Verification error:', e);
         loadingEl.style.display = 'none';
         showFailureState();
+    }
+}
+
+function setupCertificateSharing(certId, verificationUrl, participantName) {
+    const text = `I have taken the Youth Against Drugs pledge and received my official verified certificate! Check my commitment details here:`;
+    
+    // Social Share bindings for Certificate
+    const waShare = document.getElementById('share-cert-wa');
+    if (waShare) waShare.setAttribute('href', `https://wa.me/?text=${encodeURIComponent(text + ' ' + verificationUrl)}`);
+
+    const fbShare = document.getElementById('share-cert-fb');
+    if (fbShare) fbShare.setAttribute('href', `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(verificationUrl)}`);
+
+    const xShare = document.getElementById('share-cert-x');
+    if (xShare) xShare.setAttribute('href', `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(verificationUrl)}`);
+
+    const tgShare = document.getElementById('share-cert-tg');
+    if (tgShare) tgShare.setAttribute('href', `https://t.me/share/url?url=${encodeURIComponent(verificationUrl)}&text=${encodeURIComponent(text)}`);
+
+    const emailShare = document.getElementById('share-cert-email');
+    if (emailShare) {
+        const subject = `Official Youth Against Drugs Pledge Certificate`;
+        const body = `Hi! I just participated in the anti-drug awareness movement and taken the pledge. Here is my official verified certificate: ${verificationUrl}`;
+        emailShare.setAttribute('href', `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`);
+    }
+
+    // Native Web Share API integration
+    const nativeShareBtn = document.getElementById('btn-share-native-cert');
+    const customPanel = document.getElementById('cert-sharing-panel');
+    if (navigator.share && nativeShareBtn) {
+        customPanel.style.display = 'none';
+        nativeShareBtn.style.display = 'inline-flex';
+        
+        const newNativeBtn = nativeShareBtn.cloneNode(true);
+        nativeShareBtn.parentNode.replaceChild(newNativeBtn, nativeShareBtn);
+        newNativeBtn.addEventListener('click', () => {
+            navigator.share({
+                title: 'Youth Against Drugs Certificate',
+                text: text,
+                url: verificationUrl
+            }).catch(err => console.log('Share failed:', err));
+        });
+    }
+}
+
+function setupReferralSharing(refLink, participantName) {
+    const text = `I have joined the Youth Against Drugs Campaign and taken the pledge for a drug-free future. Join me by taking the pledge using my personal invitation link:`;
+    
+    // Social Share bindings for Referral Link
+    const waRef = document.getElementById('share-ref-wa');
+    if (waRef) waRef.setAttribute('href', `https://wa.me/?text=${encodeURIComponent(text + ' ' + refLink)}`);
+
+    const tgRef = document.getElementById('share-ref-tg');
+    if (tgRef) tgRef.setAttribute('href', `https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${encodeURIComponent(text)}`);
+
+    const emailRef = document.getElementById('share-ref-email');
+    if (emailRef) {
+        const subject = `Take the Youth Against Drugs Pledge!`;
+        const body = `Hi! I have joined the anti-drug movement and taken the pledge. Support awareness and join me by taking the pledge using my personal referral link: ${refLink}`;
+        emailRef.setAttribute('href', `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`);
+    }
+
+    // Render Referral QR Code
+    const qrContainer = document.getElementById('referral-qr-container');
+    if (qrContainer && window.QRCode) {
+        qrContainer.innerHTML = '';
+        new window.QRCode(qrContainer, {
+            text: refLink,
+            width: 144,
+            height: 144,
+            colorDark: '#0f172a',
+            colorLight: '#ffffff',
+            correctLevel: window.QRCode.CorrectLevel.M
+        });
     }
 }
 

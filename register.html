@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registration - Youth Against Drugs</title>
+    <title>Campaign Registration - Youth Against Drugs</title>
     <link rel="stylesheet" href="css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -14,99 +14,117 @@
         <div class="container navbar" style="justify-content: center;">
             <div class="logo-container" style="align-items: center;">
                 <div class="logo-main">🛡️ YOUTH AGAINST DRUGS</div>
-                <div class="logo-sub">Campaign Registration Portal</div>
+                <div class="logo-sub">Youth Pledge & Outreach Campaign</div>
             </div>
         </div>
     </header>
 
     <!-- Centered Form Container -->
-    <main class="container" style="max-width: 700px; padding: 32px 24px;">
-        <h1 style="text-align: center; margin-bottom: 8px;">Youth Against Drugs</h1>
-        <p style="text-align: center; margin-bottom: 32px;">
-            Join the anti-drug awareness campaign, nominate your peers, and qualify for your official verified certificate.
-        </p>
+    <main class="container" style="max-width: 650px; padding: 40px 24px;">
 
-        <form id="campaign-registration-form">
-            
-            <!-- Section 1: Participant Info -->
-            <div class="form-section-title">Your Details</div>
+        <!-- STEP 1: NAME COLLECTION VIEW -->
+        <div id="step-name-container" style="display: block; text-align: center; padding: 20px 0;">
+            <h2 style="font-size: 32px; margin-bottom: 8px;">Take the Pledge</h2>
+            <p style="margin-bottom: 36px; font-size: 16px;">What is your name?</p>
 
-            <div class="form-group">
-                <label class="form-label" for="part-name">Full Name *</label>
-                <input type="text" id="part-name" class="form-control" placeholder="Enter your full name" required minlength="3" maxlength="100">
+            <div class="form-group" style="margin-bottom: 32px; max-width: 500px; margin-left: auto; margin-right: auto;">
+                <input type="text" id="collect-name-input" class="form-control" placeholder="Enter your full name" style="padding: 16px; font-size: 18px; text-align: center;" required minlength="3" maxlength="100">
             </div>
 
-            <div class="form-group">
-                <label class="form-label" for="part-whatsapp">WhatsApp Number *</label>
-                <input type="tel" id="part-whatsapp" class="form-control" placeholder="10-digit mobile number (e.g. 9876543210)" required>
-            </div>
+            <button type="button" id="btn-continue-name" class="btn btn-primary btn-md" style="width: 100%; max-width: 500px; padding: 14px; font-size: 16px;">
+                Continue ➡️
+            </button>
+        </div>
 
-            <div class="form-group">
-                <label class="form-label" for="part-email">Email Address *</label>
-                <input type="email" id="part-email" class="form-control" placeholder="name@example.com" required>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label" for="part-college">College / Institution *</label>
-                <input type="text" id="part-college" class="form-control" placeholder="Name of your college/university" required>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label" for="referred-by">Referral Code (Optional)</label>
-                <input type="text" id="referred-by" class="form-control" placeholder="e.g. REF0001">
-            </div>
-
-            <!-- Section 2: Friend Nominations -->
-            <div class="form-section-title">Peer Nominations</div>
-            <p style="font-size: 14px; margin-bottom: 24px;">
-                Nominate your friends to receive invitation details and multiply campaign outreach.
+        <!-- STEP 2: REGISTRATION VIEW -->
+        <div id="step-details-container" style="display: none;">
+            <h2 id="personalized-welcome-lbl" style="text-align: center; margin-bottom: 8px; font-size: 28px;">Welcome!</h2>
+            <p style="text-align: center; margin-bottom: 32px; font-size: 15px;">
+                Let's complete your registration details to proceed with the anti-drug pledge.
             </p>
 
-            <!-- Friend 1 -->
-            <div style="margin-bottom: 24px;">
-                <div style="font-family: var(--font-dashboard); font-size: 14px; font-weight: 700; color: var(--primary); margin-bottom: 12px;">Friend 1 Details *</div>
-                <div class="form-group">
-                    <label class="form-label" for="friend-1-name">Full Name *</label>
-                    <input type="text" id="friend-1-name" class="form-control" placeholder="Friend's name" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="friend-1-whatsapp">WhatsApp Number *</label>
-                    <input type="tel" id="friend-1-whatsapp" class="form-control" placeholder="10-digit mobile number" required>
-                </div>
-            </div>
+            <form id="campaign-registration-form">
+                
+                <!-- Section 1: Participant Info -->
+                <div class="form-section-title">Your Details</div>
 
-            <!-- Friend 2 -->
-            <div style="margin-bottom: 24px;">
-                <div style="font-family: var(--font-dashboard); font-size: 14px; font-weight: 700; color: var(--primary); margin-bottom: 12px;">Friend 2 Details *</div>
                 <div class="form-group">
-                    <label class="form-label" for="friend-2-name">Full Name *</label>
-                    <input type="text" id="friend-2-name" class="form-control" placeholder="Friend's name" required>
+                    <label class="form-label" for="part-name">Full Name *</label>
+                    <input type="text" id="part-name" class="form-control" placeholder="Enter your full name" required minlength="3" maxlength="100" readonly style="opacity: 0.8; background-color: var(--bg-dark);">
                 </div>
-                <div class="form-group">
-                    <label class="form-label" for="friend-2-whatsapp">WhatsApp Number *</label>
-                    <input type="tel" id="friend-2-whatsapp" class="form-control" placeholder="10-digit mobile number" required>
-                </div>
-            </div>
 
-            <!-- Friend 3 -->
-            <div style="margin-bottom: 32px;">
-                <div style="font-family: var(--font-dashboard); font-size: 14px; font-weight: 700; color: var(--text-muted); margin-bottom: 12px;">Friend 3 Details (Optional)</div>
                 <div class="form-group">
-                    <label class="form-label" for="friend-3-name">Full Name</label>
-                    <input type="text" id="friend-3-name" class="form-control" placeholder="Friend's name">
+                    <label class="form-label" for="part-whatsapp">WhatsApp Number *</label>
+                    <input type="tel" id="part-whatsapp" class="form-control" placeholder="10-digit mobile number (e.g. 9876543210)" required>
                 </div>
-                <div class="form-group">
-                    <label class="form-label" for="friend-3-whatsapp">WhatsApp Number</label>
-                    <input type="tel" id="friend-3-whatsapp" class="form-control" placeholder="10-digit mobile number">
-                </div>
-            </div>
 
-            <button type="submit" class="btn btn-primary btn-md" style="width: 100%;">
-                Proceed to Campaign Pledge ➡️
-            </button>
-        </form>
+                <div class="form-group">
+                    <label class="form-label" for="part-email">Email Address *</label>
+                    <input type="email" id="part-email" class="form-control" placeholder="name@example.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="part-college">College / Institution *</label>
+                    <input type="text" id="part-college" class="form-control" placeholder="Name of your college/university" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="referred-by">Referral Code (Optional)</label>
+                    <input type="text" id="referred-by" class="form-control" placeholder="e.g. REF0001">
+                </div>
+
+                <!-- Section 2: Friend Nominations -->
+                <div class="form-section-title">Peer Nominations</div>
+                <p style="font-size: 14px; margin-bottom: 24px; color: var(--text-muted);">
+                    Nominate your friends to receive invitation details and multiply campaign outreach.
+                </p>
+
+                <!-- Friend 1 -->
+                <div style="margin-bottom: 24px; padding: 16px; border: 1px solid var(--border-color); border-radius: var(--border-radius); background: var(--bg-surface);">
+                    <div style="font-family: var(--font-dashboard); font-size: 14px; font-weight: 700; color: var(--primary); margin-bottom: 16px; text-transform: uppercase;">Friend 1 Details *</div>
+                    <div class="form-group">
+                        <label class="form-label" for="friend-1-name">Full Name *</label>
+                        <input type="text" id="friend-1-name" class="form-control" placeholder="Friend's name" required>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label" for="friend-1-whatsapp">WhatsApp Number *</label>
+                        <input type="tel" id="friend-1-whatsapp" class="form-control" placeholder="10-digit mobile number" required>
+                    </div>
+                </div>
+
+                <!-- Friend 2 -->
+                <div style="margin-bottom: 24px; padding: 16px; border: 1px solid var(--border-color); border-radius: var(--border-radius); background: var(--bg-surface);">
+                    <div style="font-family: var(--font-dashboard); font-size: 14px; font-weight: 700; color: var(--primary); margin-bottom: 16px; text-transform: uppercase;">Friend 2 Details *</div>
+                    <div class="form-group">
+                        <label class="form-label" for="friend-2-name">Full Name *</label>
+                        <input type="text" id="friend-2-name" class="form-control" placeholder="Friend's name" required>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label" for="friend-2-whatsapp">WhatsApp Number *</label>
+                        <input type="tel" id="friend-2-whatsapp" class="form-control" placeholder="10-digit mobile number" required>
+                    </div>
+                </div>
+
+                <!-- Friend 3 -->
+                <div style="margin-bottom: 32px; padding: 16px; border: 1px solid var(--border-color); border-radius: var(--border-radius); background: var(--bg-surface);">
+                    <div style="font-family: var(--font-dashboard); font-size: 14px; font-weight: 700; color: var(--text-muted); margin-bottom: 16px; text-transform: uppercase;">Friend 3 Details (Optional)</div>
+                    <div class="form-group">
+                        <label class="form-label" for="friend-3-name">Full Name</label>
+                        <input type="text" id="friend-3-name" class="form-control" placeholder="Friend's name">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label" for="friend-3-whatsapp">WhatsApp Number</label>
+                        <input type="tel" id="friend-3-whatsapp" class="form-control" placeholder="10-digit mobile number">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-md" style="width: 100%; padding: 12px; font-size: 16px;">
+                    Proceed to Campaign Pledge ➡️
+                </button>
+            </form>
+        </div>
+
     </main>
-
 
     <!-- Footer -->
     <footer>
@@ -114,6 +132,6 @@
     </footer>
 
     <!-- Page script -->
-    <script type="module" src="js/pages/register.js?v=3"></script>
+    <script type="module" src="js/pages/register.js?v=4"></script>
 </body>
 </html>
