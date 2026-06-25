@@ -13,7 +13,7 @@
     <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
     <style>
         .hero-section {
-            padding: 120px 0 80px;
+            padding: 100px 0 60px;
             text-align: center;
             position: relative;
         }
@@ -28,10 +28,10 @@
             -webkit-text-fill-color: transparent;
         }
         .hero-subtitle {
-            font-size: 20px;
+            font-size: 18px;
             color: var(--text-muted);
             max-width: 600px;
-            margin: 0 auto 40px;
+            margin: 0 auto 36px;
             line-height: 1.6;
             font-weight: 500;
         }
@@ -39,92 +39,224 @@
             background: var(--bg-secondary);
             border-top: 1px solid var(--border-color);
             border-bottom: 1px solid var(--border-color);
-            padding: 64px 0;
-            margin: 64px 0;
+            padding: 48px 0;
+            margin: 48px 0;
         }
         .stats-grid-landing {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 32px;
+            gap: 24px;
             text-align: center;
         }
         .stat-card-landing {
             padding: 16px;
         }
         .stat-num-landing {
-            font-size: 48px;
+            font-size: 40px;
             font-weight: 800;
             color: var(--primary);
             font-family: var(--font-mono);
             margin-bottom: 8px;
         }
         .stat-lbl-landing {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-muted);
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.1em;
         }
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 24px;
-            margin-bottom: 64px;
-        }
-        .info-card-icon {
-            color: var(--primary);
-            margin-bottom: 16px;
-            display: inline-block;
-        }
-        .section-header-center {
-            text-align: center;
-            max-width: 600px;
-            margin: 0 auto 48px;
-        }
-        .timeline-num {
-            font-size: 32px;
-            font-weight: 800;
-            color: var(--primary);
-            font-family: var(--font-mono);
-            min-width: 60px;
-            line-height: 1;
-        }
-        .timeline-card {
+
+        /* Alternating Content Layout Blocks */
+        .edu-section {
             display: flex;
-            gap: 24px;
-            align-items: flex-start;
+            align-items: center;
+            gap: 64px;
+            margin: 80px 0;
             text-align: left;
         }
-        .cta-box {
-            background: linear-gradient(135deg, rgba(225, 29, 72, 0.08) 0%, rgba(18, 18, 18, 0.8) 100%);
-            border: 1px solid var(--border-color);
-            padding: 64px 48px;
-            border-radius: var(--border-radius-lg);
-            text-align: center;
-            margin: 96px 0;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        .edu-section.reverse {
+            flex-direction: row-reverse;
         }
+        .edu-content {
+            flex: 1.2;
+        }
+        .edu-visual {
+            flex: 0.8;
+            background: rgba(225, 29, 72, 0.02);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-md);
+            height: 280px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 20px rgba(225, 29, 72, 0.05);
+        }
+        .edu-visual::after {
+            content: '';
+            position: absolute;
+            width: 140px;
+            height: 140px;
+            background: radial-gradient(circle, rgba(225, 29, 72, 0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .edu-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 16px;
+        }
+        .edu-desc {
+            font-size: 15px;
+            color: var(--text-muted);
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+        .edu-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .edu-list-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: #ffffff;
+        }
+        .edu-list-item i {
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+
+        /* Visual Timeline */
+        .timeline-section {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+            padding: 64px 0;
+            margin: 80px 0;
+        }
+        .timeline-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 20px;
+            position: relative;
+            margin-top: 32px;
+        }
+        .timeline-node {
+            text-align: center;
+            position: relative;
+            padding: 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-md);
+            transition: var(--transition-smooth);
+        }
+        .timeline-node:hover {
+            border-color: rgba(225, 29, 72, 0.3);
+            transform: translateY(-2px);
+        }
+        .timeline-step-num {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+        .timeline-step-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+        .timeline-step-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* Dedicated Inspirational Quotes Panel */
+        .quote-section {
+            max-width: 800px;
+            margin: 80px auto;
+            text-align: center;
+            padding: 48px;
+            background: radial-gradient(circle at center, rgba(225, 29, 72, 0.04) 0%, rgba(18, 18, 18, 0.8) 100%);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            position: relative;
+        }
+        .quote-icon {
+            font-size: 40px;
+            color: var(--primary);
+            opacity: 0.4;
+            line-height: 1;
+            margin-bottom: 16px;
+            font-family: var(--font-serif);
+        }
+        .quote-text {
+            font-size: 20px;
+            font-weight: 500;
+            color: #ffffff;
+            line-height: 1.6;
+            min-height: 64px;
+            transition: opacity 0.5s ease;
+        }
+
+        /* Leaderboard styling overrides */
         .leaderboard-rank {
             font-family: var(--font-mono);
             color: var(--primary);
             font-weight: 800;
-            font-size: 18px;
-            width: 48px;
+            font-size: 16px;
+            width: 40px;
         }
         .leaderboard-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 16px 24px;
+            padding: 14px 20px;
             background: rgba(255, 255, 255, 0.01);
             border: 1px solid var(--border-color);
             border-radius: var(--border-radius-sm);
-            margin-bottom: 12px;
+            margin-bottom: 8px;
             transition: var(--transition-smooth);
         }
         .leaderboard-item:hover {
             border-color: rgba(225, 29, 72, 0.2);
-            transform: scale(1.01);
+            transform: scale(1.005);
+        }
+
+        .cta-box {
+            background: linear-gradient(135deg, rgba(225, 29, 72, 0.06) 0%, rgba(18, 18, 18, 0.8) 100%);
+            border: 1px solid var(--border-color);
+            padding: 64px 32px;
+            border-radius: var(--border-radius-lg);
+            text-align: center;
+            margin: 80px 0;
+        }
+
+        /* Responsive Layout Overrides */
+        @media (max-width: 900px) {
+            .edu-section, .edu-section.reverse {
+                flex-direction: column;
+                gap: 32px;
+                text-align: center;
+            }
+            .edu-list-item {
+                justify-content: center;
+            }
+            .timeline-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            .hero-title {
+                font-size: 40px;
+            }
         }
     </style>
 </head>
@@ -148,100 +280,168 @@
         <!-- Hero Section -->
         <section class="hero-section fade-in">
             <h1 class="hero-title">One Pledge.<br>One Drug-Free Future.</h1>
-            <p class="hero-subtitle">Join the campaign to raise awareness, protect our campus, and secure a brighter future. Take the commitment.</p>
-            <a href="register.html" class="btn btn-primary btn-md" style="font-size: 16px; padding: 14px 32px;">
-                Take the Pledge <i data-lucide="chevron-right" style="width: 18px; height: 18px;"></i>
+            <p class="hero-subtitle">Together, we build a supportive community. Join the outreach, take the pledge, and nominate your peers to lead a healthy life.</p>
+            <a href="register.html" class="btn btn-primary btn-md" style="font-size: 15px; padding: 12px 30px;">
+                Take the Pledge <i data-lucide="chevron-right" style="width: 16px; height: 16px;"></i>
             </a>
         </section>
 
-        <!-- Bento statistics section -->
+        <!-- Dynamic Statistics Counters -->
         <section class="stats-section">
             <div class="container">
                 <div class="stats-grid-landing" id="campaign-stats-container">
-                    <!-- Statistics injected dynamically -->
+                    <!-- Statistics injected dynamically from campaign-data.js -->
                 </div>
             </div>
         </section>
 
-        <!-- Information Cards -->
-        <section style="margin: 96px 0;">
-            <div class="section-header-center fade-in">
-                <h2>Understand the Challenge</h2>
-                <p>Knowledge is our first line of defense. Learn about the impact of drug abuse on individuals and communities.</p>
+        <!-- Informative Educational Sections: Alternating Layouts -->
+        <section style="margin: 80px 0;">
+            
+            <!-- Section 1: Drug Abuse in India & Kerala (Left Content, Right Visual) -->
+            <div class="edu-section fade-in">
+                <div class="edu-content">
+                    <div style="display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;">
+                        <i data-lucide="alert-circle" style="width: 14px; height: 14px;"></i> The National & State Crisis
+                    </div>
+                    <h2 class="edu-title">Drug Abuse in India & Kerala</h2>
+                    <p class="edu-desc">Substance abuse is a growing threat affecting millions of individuals and families across India. Campuses and schools in Kerala are increasingly targeted by illicit networks, making active peer awareness and community protection critical.</p>
+                    <ul class="edu-list">
+                        <li class="edu-list-item"><i data-lucide="check" style="width: 16px; height: 16px;"></i> Millions nationwide struggle with chemical dependency.</li>
+                        <li class="edu-list-item"><i data-lucide="check" style="width: 16px; height: 16px;"></i> Campuses and youth hotspots are primary risk zones.</li>
+                        <li class="edu-list-item"><i data-lucide="check" style="width: 16px; height: 16px;"></i> Early awareness is the most effective shield.</li>
+                    </ul>
+                </div>
+                <div class="edu-visual">
+                    <i data-lucide="globe" style="width: 80px; height: 80px; color: var(--primary); opacity: 0.8;"></i>
+                </div>
             </div>
 
-            <div class="info-grid">
-                <div class="info-card fade-in">
-                    <span class="info-card-icon"><i data-lucide="globe" style="width: 32px; height: 32px;"></i></span>
-                    <h3 class="info-card-title">Drug Abuse in India</h3>
-                    <p style="font-size: 14px;">Millions of lives are impacted by illicit drug use nationwide, affecting health, productivity, and the future potential of youth.</p>
+            <!-- Section 2: Impact on Students & Families (Right Content, Left Visual) -->
+            <div class="edu-section reverse fade-in">
+                <div class="edu-content">
+                    <div style="display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;">
+                        <i data-lucide="users" style="width: 14px; height: 14px;"></i> Social Fallout
+                    </div>
+                    <h2 class="edu-title">Effects on Students & Families</h2>
+                    <p class="edu-desc">Dependency dismantles academic focus, limits professional careers, and deteriorates mental peace. Families undergo immense emotional stress, financial burden, and social stigma when a loved one battles addiction.</p>
+                    <ul class="edu-list">
+                        <li class="edu-list-item"><i data-lucide="check" style="width: 16px; height: 16px;"></i> Declining grades and dropouts rise with substance usage.</li>
+                        <li class="edu-list-item"><i data-lucide="check" style="width: 16px; height: 16px;"></i> Family connections fray under pressure and anxiety.</li>
+                        <li class="edu-list-item"><i data-lucide="check" style="width: 16px; height: 16px;"></i> Stigma hinders individuals from seeking timely assistance.</li>
+                    </ul>
                 </div>
-                <div class="info-card fade-in">
-                    <span class="info-card-icon"><i data-lucide="shield-alert" style="width: 32px; height: 32px;"></i></span>
-                    <h3 class="info-card-title">Drug Abuse in Kerala</h3>
-                    <p style="font-size: 14px;">Outreach campaigns are vital in Kerala's campuses to prevent substance abuse, support peer guidelines, and encourage healthy living.</p>
+                <div class="edu-visual">
+                    <i data-lucide="home" style="width: 80px; height: 80px; color: var(--primary); opacity: 0.8;"></i>
                 </div>
-                <div class="info-card fade-in">
-                    <span class="info-card-icon"><i data-lucide="graduation-cap" style="width: 32px; height: 32px;"></i></span>
-                    <h3 class="info-card-title">Effects on Students</h3>
-                    <p style="font-size: 14px;">Substance dependency disrupts academic performance, mental stability, interpersonal relationships, and professional prospects.</p>
+            </div>
+
+            <!-- Section 3: Mental Health & Socioeconomic Consequences (Left Content, Right Visual) -->
+            <div class="edu-section fade-in">
+                <div class="edu-content">
+                    <div style="display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;">
+                        <i data-lucide="brain" style="width: 14px; height: 14px;"></i> Cognitive Health & Society
+                    </div>
+                    <h2 class="edu-title">Mental Health & Economic Impact</h2>
+                    <p class="edu-desc">Chronic drug usage alters brain chemistry, triggering anxiety, severe depression, and paranoia. Economically, substance dependency results in lost productivity, high medical expenses, and increases strain on public healthcare systems.</p>
+                    <ul class="edu-list">
+                        <li class="edu-list-item"><i data-lucide="check" style="width: 16px; height: 16px;"></i> Brain chemistry alterations compromise decision-making.</li>
+                        <li class="edu-list-item"><i data-lucide="check" style="width: 16px; height: 16px;"></i> Healthcare support networks face elevated challenges.</li>
+                        <li class="edu-list-item"><i data-lucide="check" style="width: 16px; height: 16px;"></i> Workplace productivity declines at a national level.</li>
+                    </ul>
                 </div>
-                <div class="info-card fade-in">
-                    <span class="info-card-icon"><i data-lucide="home" style="width: 32px; height: 32px;"></i></span>
-                    <h3 class="info-card-title">Effects on Families</h3>
-                    <p style="font-size: 14px;">Families carry severe emotional, psychological, and financial burdens when members struggle with addiction issues.</p>
+                <div class="edu-visual">
+                    <i data-lucide="activity" style="width: 80px; height: 80px; color: var(--primary); opacity: 0.8;"></i>
                 </div>
-                <div class="info-card fade-in">
-                    <span class="info-card-icon"><i data-lucide="activity" style="width: 32px; height: 32px;"></i></span>
-                    <h3 class="info-card-title">Mental & Physical Health</h3>
-                    <p style="font-size: 14px;">Addiction triggers serious health consequences, including cognitive impairment, anxiety, depression, and physical deterioration.</p>
+            </div>
+
+            <!-- Section 4: Initiatives & Prevention (Right Content, Left Visual) -->
+            <div class="edu-section reverse fade-in">
+                <div class="edu-content">
+                    <div style="display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;">
+                        <i data-lucide="shield" style="width: 14px; height: 14px;"></i> Safe Environments
+                    </div>
+                    <h2 class="edu-title">Awareness & Community Action</h2>
+                    <p class="edu-desc">The government, colleges, and social organizations are setting up active support channels. Campuses are establishing peer guidelines, counselor check-ins, and secure reporting networks to maintain safe student spaces.</p>
+                    <ul class="edu-list">
+                        <li class="edu-list-item"><i data-lucide="check" style="width: 16px; height: 16px;"></i> Campus anti-drug committees create peer security.</li>
+                        <li class="edu-list-item"><i data-lucide="check" style="width: 16px; height: 16px;"></i> Professional counselors offer secure guidance.</li>
+                        <li class="edu-list-item"><i data-lucide="check" style="width: 16px; height: 16px;"></i> Campaign portals spread vital pledge resources.</li>
+                    </ul>
                 </div>
-                <div class="info-card fade-in">
-                    <span class="info-card-icon"><i data-lucide="scale" style="width: 32px; height: 32px;"></i></span>
-                    <h3 class="info-card-title">Crime and Society</h3>
-                    <p style="font-size: 14px;">Drug networks fuel local crime, disrupt neighborhood safety, and drain community healthcare and law enforcement resources.</p>
+                <div class="edu-visual">
+                    <i data-lucide="heart" style="width: 80px; height: 80px; color: var(--primary); opacity: 0.8;"></i>
+                </div>
+            </div>
+
+            <!-- Section 5: How Youth Can Help (Left Content, Right Visual) -->
+            <div class="edu-section fade-in">
+                <div class="edu-content">
+                    <div style="display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;">
+                        <i data-lucide="sparkles" style="width: 14px; height: 14px;"></i> Student Leadership
+                    </div>
+                    <h2 class="edu-title">How You Can Make a Difference</h2>
+                    <p class="edu-desc">Your voice matters. By taking the anti-drug pledge, committing to healthy choices, and inviting your friends to participate, you help establish a supportive peer circle that rejects substance abuse.</p>
+                    <ul class="edu-list">
+                        <li class="edu-list-item"><i data-lucide="check" style="width: 16px; height: 16px;"></i> Share the campaign verification link with peers.</li>
+                        <li class="edu-list-item"><i data-lucide="check" style="width: 16px; height: 16px;"></i> Encourage honest peer conversations about safety.</li>
+                        <li class="edu-list-item"><i data-lucide="check" style="width: 16px; height: 16px;"></i> Provide friendly support to classmates in distress.</li>
+                    </ul>
+                </div>
+                <div class="edu-visual">
+                    <i data-lucide="smile" style="width: 80px; height: 80px; color: var(--primary); opacity: 0.8;"></i>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Journey Visual Timeline -->
+        <section class="timeline-section fade-in">
+            <div class="section-header-center">
+                <h2>Campaign Journey Timeline</h2>
+                <p>Understand the complete campaign flow from education to certified verification and social outreach.</p>
+            </div>
+            <div class="timeline-grid">
+                <div class="timeline-node">
+                    <div class="timeline-step-num">Step 01</div>
+                    <div class="timeline-step-title">Learn</div>
+                    <div class="timeline-step-desc">Explore drug abuse impacts on campuses and communities.</div>
+                </div>
+                <div class="timeline-node">
+                    <div class="timeline-step-num">Step 02</div>
+                    <div class="timeline-step-title">Understand</div>
+                    <div class="timeline-step-desc">Acknowledge the core pledge requirements and values.</div>
+                </div>
+                <div class="timeline-node">
+                    <div class="timeline-step-num">Step 03</div>
+                    <div class="timeline-step-title">Pledge</div>
+                    <div class="timeline-step-desc">Listen and commit to all three pledge stages.</div>
+                </div>
+                <div class="timeline-node">
+                    <div class="timeline-step-num">Step 04</div>
+                    <div class="timeline-step-title">Certify</div>
+                    <div class="timeline-step-desc">Get your secure verified campaign credential.</div>
+                </div>
+                <div class="timeline-node">
+                    <div class="timeline-step-num">Step 05</div>
+                    <div class="timeline-step-title">Outreach</div>
+                    <div class="timeline-step-desc">Invite peers using your unique referral code.</div>
                 </div>
             </div>
         </section>
 
-        <!-- Timeline Section -->
-        <section class="responsibility-section">
-            <div class="section-header-center fade-in">
-                <h2>Our Shared Responsibility</h2>
-                <p>Building a drug-free community requires coordinated action between the administration, society, and our youth.</p>
-            </div>
-
-            <div style="max-width: 800px; margin: 0 auto;">
-                <div class="timeline-card fade-in">
-                    <div class="timeline-num">01</div>
-                    <div>
-                        <h4 style="font-weight:700; font-size:16px; margin-bottom:4px; color:#ffffff;">Government & Community Duty</h4>
-                        <p style="font-size:14px; margin-bottom:0;">Strengthening campus enforcement, developing accessible rehabilitation facilities, and organizing large-scale public safety initiatives.</p>
-                    </div>
-                </div>
-
-                <div class="timeline-card fade-in">
-                    <div class="timeline-num">02</div>
-                    <div>
-                        <h4 style="font-weight:700; font-size:16px; margin-bottom:4px; color:#ffffff;">Youth Leadership & Peer Support</h4>
-                        <p style="font-size:14px; margin-bottom:0;">Creating supportive environments in classrooms, checking on classmates, and serving as advocates for positive lifestyles.</p>
-                    </div>
-                </div>
-
-                <div class="timeline-card fade-in">
-                    <div class="timeline-num">03</div>
-                    <div>
-                        <h4 style="font-weight:700; font-size:16px; margin-bottom:4px; color:#ffffff;">Individual Action</h4>
-                        <p style="font-size:14px; margin-bottom:0;">Taking the anti-drug pledge, spreading awareness to at least 3 friends, and helping connect those in need to professional medical advice.</p>
-                    </div>
-                </div>
+        <!-- Dedicated Inspirational Quotes Panel -->
+        <section class="quote-section fade-in">
+            <div class="quote-icon">“</div>
+            <div class="quote-text" id="rotating-quote-text">
+                Every pledge strengthens the movement.
             </div>
         </section>
 
-        <!-- Outreach Leaders Leaderboard -->
-        <section class="leaderboard-section fade-in" style="margin-top: 96px;">
-            <h3 style="font-size: 22px; color: var(--primary); text-align: center; margin-bottom: 8px;">🏆 Outreach Leaders</h3>
-            <p style="text-align: center; margin-bottom: 32px;">Recognizing students who have inspired the most peers to take the pledge.</p>
+        <!-- Campaign Leaderboard Section -->
+        <section class="leaderboard-section fade-in" style="margin-top: 80px;">
+            <h3 style="font-size: 22px; color: var(--primary); text-align: center; margin-bottom: 8px; font-weight: 800;">🏆 Campaign Outreach Leaders</h3>
+            <p style="text-align: center; margin-bottom: 32px; color: var(--text-muted);">Recognizing participants who have inspired the most peers to take the pledge.</p>
             
             <div id="leaderboard-loading" style="text-align: center; padding: 20px;">
                 <div class="spinner" style="margin: 0 auto;"></div>
@@ -257,8 +457,10 @@
         </section>
 
         <!-- Verification Redirect Form -->
-        <section class="flat-card fade-in" style="margin-top: 96px; margin-bottom: 40px;">
-            <h3 style="font-size: 20px; color: #ffffff; margin-bottom: 8px;">🔍 Verify Campaign Certificate</h3>
+        <section class="flat-card fade-in" style="margin-top: 80px;">
+            <h3 style="font-size: 20px; color: #ffffff; margin-bottom: 8px; font-weight: 800; display: flex; align-items: center; gap: 8px;">
+                <i data-lucide="search" style="width: 20px; height: 20px; color: var(--primary);"></i> Verify Certificate
+            </h3>
             <p style="margin-bottom: 24px; font-size: 14px; color: var(--text-muted);">Enter a certificate identifier to verify its validity and check the participant's commitment details.</p>
             <form id="landing-verify-form" style="display: flex; gap: 12px; flex-wrap: wrap;">
                 <input type="text" id="verify-cert-id" class="form-control" placeholder="CERT-2026-000001" required style="flex: 1; min-width: 250px;">
@@ -266,14 +468,14 @@
             </form>
         </section>
 
-        <!-- Join Campaign Box -->
+        <!-- Call to Action Box -->
         <section class="cta-box fade-in">
-            <h2 style="font-size: 36px; margin-bottom: 12px; font-weight: 800;">Join the Movement</h2>
+            <h2 style="font-size: 36px; margin-bottom: 12px; font-weight: 800;">Ready to Join the Movement?</h2>
             <p style="font-size: 16px; color: var(--text-muted); margin-bottom: 32px; max-width: 500px; margin-left: auto; margin-right: auto;">
-                Your pledge today can inspire tomorrow. Commit to a drug-free future and invite your peers to complete the pledge.
+                Take the pledge and stand for a healthier, drug-free future.
             </p>
-            <a href="register.html" class="btn btn-primary btn-md" style="font-size: 16px; padding: 14px 32px;">
-                Take the Pledge Now
+            <a href="register.html" class="btn btn-primary btn-md" style="font-size: 15px; padding: 12px 32px;">
+                Take the Pledge
             </a>
         </section>
 
@@ -286,7 +488,6 @@
 
     <!-- Shared Microinteractions & Cursor spotlight script -->
     <script>
-        // Initialize Lucide Icons
         lucide.createIcons();
 
         // Mouse Spotlight Glow Coordinator
@@ -310,12 +511,8 @@
             opacity: 0,
             y: 40,
             duration: 1,
-            stagger: 0.2,
-            ease: "power3.out",
-            scrollTrigger: {
-                trigger: ".fade-in",
-                start: "top 80%"
-            }
+            stagger: 0.15,
+            ease: "power3.out"
         });
     </script>
     <script type="module" src="js/pages/landing.js?v=4"></script>

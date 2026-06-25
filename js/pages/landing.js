@@ -1,14 +1,7 @@
 import { DatabaseService } from '../services/supabase.js';
 import { ReferralService } from '../services/referral.js';
 import { Utils } from '../utils.js';
-
-// Dedicated stats data structure for easy customization
-const CAMPAIGN_STATS = [
-    { num: '34M+', label: 'Affected in India', desc: 'Substance abuse estimate' },
-    { num: '60%', label: 'Youth Target Area', desc: 'Ages 12-25 vulnerability peak' },
-    { num: '95%', label: 'Outreach Target', desc: 'Aim for campus level awareness' },
-    { num: '100%', label: 'Youth Commitment', desc: 'Building a clean society' }
-];
+import { CAMPAIGN_AWARENESS_DATA } from '../campaign-data.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     // Capture referral code if visiting via referral link
@@ -19,17 +12,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     initStats();
+    initQuotesRotation();
     initLeaderboard();
     initVerifyForm();
 });
 
-// Render dynamic campaign stats
+// Render dynamic campaign stats from campaign-data.js
 function initStats() {
     const container = document.getElementById('campaign-stats-container');
     if (!container) return;
     container.innerHTML = '';
 
-    CAMPAIGN_STATS.forEach(stat => {
+    const stats = CAMPAIGN_AWARENESS_DATA.AWARENESS_STATS || [];
+    stats.forEach(stat => {
         const div = document.createElement('div');
         div.className = 'stat-card-landing';
         div.innerHTML = `
@@ -39,6 +34,30 @@ function initStats() {
         `;
         container.appendChild(div);
     });
+}
+
+// Quote Panel Rotator with smooth opacity transitions
+function initQuotesRotation() {
+    const quoteEl = document.getElementById('rotating-quote-text');
+    if (!quoteEl) return;
+
+    const quotes = CAMPAIGN_AWARENESS_DATA.ROTATING_QUOTES || [];
+    if (quotes.length === 0) return;
+
+    let index = 0;
+    quoteEl.textContent = quotes[0];
+
+    setInterval(() => {
+        // Fade out
+        quoteEl.style.opacity = 0;
+
+        setTimeout(() => {
+            index = (index + 1) % quotes.length;
+            quoteEl.textContent = quotes[index];
+            // Fade in
+            quoteEl.style.opacity = 1;
+        }, 500); // Wait for fade out to finish
+    }, 4500); // Rotate every 4.5s
 }
 
 // Load and render top referrers
