@@ -761,3 +761,52 @@ footer {
     opacity: 1;
     transform: translateY(0) translateZ(0);
 }
+
+/* Dashboard Action Buttons micro-polish */
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.dashboard-action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 32px;
+    padding: 0 14px;
+    border-radius: var(--border-radius-sm);
+    font-family: var(--font-accent);
+    font-weight: 700;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    border: 1px solid var(--border-color);
+    outline: none;
+    text-decoration: none;
+    line-height: 1;
+    transition: transform 0.2s ease-out, opacity 0.2s ease-out;
+}
+
+#copy-campaign-link-btn.dashboard-action-btn {
+    background: rgba(255, 255, 255, 0.02);
+    color: #ffffff;
+}
+
+#copy-campaign-link-btn.dashboard-action-btn:hover {
+    transform: translateY(-1px);
+    opacity: 0.8;
+}
+
+#logout-btn.dashboard-action-btn {
+    background: rgba(225, 29, 72, 0.06);
+    border-color: rgba(225, 29, 72, 0.15);
+    color: var(--primary);
+}
+
+#logout-btn.dashboard-action-btn:hover {
+    transform: translateY(-1px);
+    opacity: 0.8;
+}
