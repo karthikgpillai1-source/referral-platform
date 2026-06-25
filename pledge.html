@@ -66,6 +66,9 @@
                 <button id="btn-play-voice" class="btn btn-secondary btn-md">
                     🔊 Play Narration
                 </button>
+                <button id="btn-stop-voice" class="btn btn-secondary btn-md">
+                    ⏹ Stop
+                </button>
                 <button id="btn-restart-voice" class="btn btn-secondary btn-md">
                     🔄 Restart
                 </button>
@@ -74,7 +77,7 @@
             <!-- Error Banner -->
             <div id="speech-error-container" style="display: none; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.25); color: var(--danger); padding: 12px 16px; border-radius: var(--border-radius); font-size: 14px; margin-bottom: 24px; text-align: left;">
                 <div style="display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap;">
-                    <span>⚠️ Voice narration unavailable on this device.</span>
+                    <span>⚠️ Voice narration is unavailable on this device. You can continue by reading the pledge yourself.</span>
                     <div style="display: flex; gap: 8px;">
                         <button id="btn-replay-error" class="btn btn-secondary btn-sm" style="text-transform:none;">Replay</button>
                         <button id="btn-retry-error" class="btn btn-primary btn-sm" style="text-transform:none;">Retry</button>
@@ -85,9 +88,9 @@
             <!-- Acceptance Box -->
             <div style="text-align: left; margin-bottom: 32px;">
                 <div style="display: flex; gap: 12px; align-items: flex-start;">
-                    <input type="checkbox" id="pledge-chk" disabled style="width: 20px; height: 20px; accent-color: var(--primary); cursor: pointer; margin-top: 2px;">
+                    <input type="checkbox" id="pledge-chk" style="width: 20px; height: 20px; accent-color: var(--primary); cursor: pointer; margin-top: 2px;">
                     <label for="pledge-chk" style="font-family: var(--font-dashboard); font-size: 14px; font-weight: 600; color: var(--text-muted); cursor: pointer; user-select: none; line-height: 1.4;">
-                        I have listened to and understood this pledge in its entirety.
+                        I have read and understood this pledge.
                     </label>
                 </div>
             </div>

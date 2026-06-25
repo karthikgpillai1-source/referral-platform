@@ -1,416 +1,143 @@
-import { DatabaseService } from '../services/supabase.js?v=4';
+// Pledge Orchestrator - Main entry point linking all isolated controllers
+import { VoiceEngine } from '../services/voiceEngine.js';
+import { SessionController } from './pledge/sessionController.js';
+import { PledgeController, PLEDGES } from './pledge/pledgeController.js';
+import { UIController } from './pledge/uiController.js';
+import { VoiceController } from './pledge/voiceController.js';
+import { NavigationController } from './pledge/navigationController.js';
 import { pronunciationDictionary } from '../services/pronunciationDictionary.js';
 import { Utils } from '../utils.js';
 
-let participant = null;
-let currentStep = 1;
-let chosenPledgeText = '';
-let spokenPledgeText = '';
-let wordsData = [];
-let spokenSegments = [];
-let utterance = null;
-let synth = window.speechSynthesis;
-let isReading = false;
-let speechCompleted = false;
+const DEBUG = false; // Set to false to disable all debug logs for production
 
-const PLEDGES = {
-    1: "I pledge to lead a drug-free life, value my health, support others in making healthy choices, and contribute to building a safe, drug-free community.",
-    2: "I solemnly swear to never use or distribute harmful substances, to protect my peers from substance abuse, and to actively advocate for wellness, safety, and awareness.",
-    3: "I commit to raising awareness about the dangers of drugs, assisting those struggling with addiction, and maintaining a healthy mind and body to secure a brighter future."
-};
+function debugLog(section, details) {
+    if (DEBUG) {
+        console.log(`[Pledge Orchestrator] [${section}]`, details);
+    }
+}
+
+let pledgeCtrl, uiCtrl, voiceEng, voiceCtrl, navCtrl;
+let currentStep = 1;
+let currentPledgeText = '';
 
 document.addEventListener('DOMContentLoaded', async () => {
-    const participantId = Utils.getQueryParam('id');
-    const tempName = sessionStorage.getItem('temp_full_name');
+    debugLog('Init', 'Initializing components...');
 
-    if (!participantId && !tempName) {
-        Utils.showToast('Please enter your name first. Redirecting to start...', 'error');
-        setTimeout(() => {
-            const dest = window.location.pathname.endsWith('.html') ? 'register.html' : 'register';
-            window.location.href = dest;
-        }, 1500);
+    // Instantiate Controllers
+    pledgeCtrl = new PledgeController();
+    uiCtrl = new UIController();
+    voiceEng = new VoiceEngine({ debug: DEBUG });
+    voiceCtrl = new VoiceController(voiceEng, uiCtrl);
+    navCtrl = new NavigationController(pledgeCtrl, uiCtrl, SessionController);
+
+    const participantId = SessionController.getParticipantId();
+    const tempName = SessionController.getTempName();
+
+    // Verify Route Guard
+    if (!navCtrl.verifyRouteGuard(participantId, tempName)) {
+        return;
+    }
+
+    // Check if pre-registration pledges are already completed
+    const pledgesDone = SessionController.getPledgesCompleted();
+    if (pledgesDone && !participantId) {
+        debugLog('Route', 'Pledges already completed. Directly showing registration.');
+        uiCtrl.showRegistrationForm(tempName);
+        bindRegistrationForm();
         return;
     }
 
     try {
-        if (participantId) {
-            // Loading an existing participant (e.g. from admin panel or resume link)
-            participant = await DatabaseService.getParticipantById(participantId);
-            if (!participant) {
-                Utils.showToast('Participant not found. Redirecting...', 'error');
-                setTimeout(() => window.location.href = 'register', 1500);
-                return;
-            }
-            determineStartStep();
-        } else {
-            // Pre-registration workflow (client-side pledges first)
-            participant = { full_name: tempName };
-            currentStep = 1;
+        uiCtrl.showLoadingState();
+
+        // Load participant information
+        const participant = await pledgeCtrl.loadParticipant(participantId, tempName);
+        if (!participant) {
+            Utils.showToast('Failed to load participant details.', 'error');
+            return;
         }
 
+        // Determine step position
+        if (participantId) {
+            currentStep = pledgeCtrl.determineStartStep();
+        } else {
+            currentStep = SessionController.getCurrentStep();
+        }
+
+        debugLog('StartStep', { currentStep });
         loadStep(currentStep);
-    } catch (e) {
-        console.error(e);
-        Utils.showToast('Error loading pledge details.', 'error');
+
+    } catch (err) {
+        console.error('[Orchestrator] Initialization error:', err);
+        Utils.showToast('An error occurred loading the page.', 'error');
     }
 
-    // Error banner button bindings
-    const replayErrBtn = document.getElementById('btn-replay-error');
-    if (replayErrBtn) {
-        replayErrBtn.addEventListener('click', () => {
-            hideErrorBanner();
-            restartReading();
-        });
-    }
-
-    const retryErrBtn = document.getElementById('btn-retry-error');
-    if (retryErrBtn) {
-        retryErrBtn.addEventListener('click', () => {
-            hideErrorBanner();
-            setupUtterance();
-            togglePlay();
-        });
-    }
-
-    // Bind post-pledge registration form submission
-    const regForm = document.getElementById('post-pledge-registration-form');
-    if (regForm) {
-        regForm.addEventListener('submit', handlePostPledgeRegistration);
-    }
+    // Bind registration form
+    bindRegistrationForm();
 });
-
-function determineStartStep() {
-    if (participant.pledge_3_completed) {
-        currentStep = 3;
-    } else if (participant.pledge_2_completed) {
-        currentStep = 3;
-    } else if (participant.pledge_1_completed) {
-        currentStep = 2;
-    } else {
-        currentStep = 1;
-    }
-}
 
 function loadStep(step) {
     currentStep = step;
-    isReading = false;
-    speechCompleted = false;
-    
-    if (synth) synth.cancel();
-    hideErrorBanner();
-    
-    const chk = document.getElementById('pledge-chk');
-    chk.checked = false;
-    chk.setAttribute('disabled', 'true');
-    
-    const btn = document.getElementById('pledge-btn');
-    btn.setAttribute('disabled', 'true');
-    btn.textContent = step === 3 ? 'Accept Pledge & Claim Certificate 🎓' : 'Continue to Next Step ➡️';
-
-    // Update Progress Indicator
-    const progressFill = document.getElementById('progress-bar-fill');
-    const stepLabel = document.getElementById('progress-step-lbl');
-    const percentLabel = document.getElementById('progress-percent-lbl');
-    
-    const percent = Math.round((step / 3) * 100);
-    if (progressFill) progressFill.style.width = `${percent}%`;
-    if (stepLabel) stepLabel.textContent = `Step ${step} of 3`;
-    if (percentLabel) percentLabel.textContent = `${percent}%`;
-
-    // Personalized Name
-    const fullName = participant.full_name.trim();
-    let firstName = fullName.split(/\s+/)[0];
-    firstName = firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
-
-    // Load Pledge Statement
-    const basePledge = PLEDGES[step];
-    chosenPledgeText = basePledge.replace(/^I\s+/, `I, ${firstName}, `);
-
-    // Build Phonetic Speech text & highlight segments mapping
-    const originalWords = chosenPledgeText.split(/\s+/);
-    let spokenWords = [];
-    spokenSegments = [];
-    let currentSpokenCharOffset = 0;
-
-    originalWords.forEach((word, idx) => {
-        const cleanWord = word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "").toLowerCase();
-        const phonetic = pronunciationDictionary[cleanWord];
-        
-        let spokenForm = word;
-        if (phonetic) {
-            const cleanIndex = word.toLowerCase().indexOf(cleanWord);
-            const prefix = word.slice(0, cleanIndex);
-            const suffix = word.slice(cleanIndex + cleanWord.length);
-            spokenForm = prefix + phonetic + suffix;
-        }
-
-        const startSpoken = currentSpokenCharOffset;
-        const endSpoken = startSpoken + spokenForm.length;
-        
-        spokenWords.push(spokenForm);
-        
-        spokenSegments.push({
-            origIndex: idx,
-            start: startSpoken,
-            end: endSpoken
-        });
-
-        currentSpokenCharOffset = endSpoken + 1; // plus space
-    });
-
-    spokenPledgeText = spokenWords.join(' ');
-
-    // Dynamic word wrapping for highlights in visual text container
-    const textContainer = document.getElementById('pledge-text-container');
-    wordsData = [];
-    let currentOffset = 0;
-    
-    const spans = originalWords.map((word, idx) => {
-        const start = chosenPledgeText.indexOf(word, currentOffset);
-        const end = start + word.length;
-        currentOffset = end;
-
-        wordsData.push({
-            index: idx,
-            word: word,
-            start: start,
-            end: end
-        });
-
-        return `<span class="pledge-word" id="word-${idx}">${word}</span>`;
-    });
-
-    textContainer.innerHTML = spans.join(' ');
-
-    // Show Main Card
-    document.getElementById('pledge-loading-card').style.display = 'none';
-    document.getElementById('pledge-main-card').style.display = 'block';
-
-    // Setup speech synthesis utterance
-    setupUtterance();
-
-    // Bind controls
-    setupControls();
-}
-
-function setupUtterance() {
-    if (!synth) {
-        showErrorBanner();
-        return;
+    if (!SessionController.getParticipantId()) {
+        SessionController.setCurrentStep(step);
     }
 
-    synth.cancel();
-
-    utterance = new SpeechSynthesisUtterance(spokenPledgeText);
-    utterance.rate = 0.92;
-    utterance.pitch = 1.0;
-    utterance.volume = 1.0;
-
-    setIndianVoice();
-    if (synth.onvoiceschanged !== undefined) {
-        synth.onvoiceschanged = setIndianVoice;
-    }
-
-    utterance.onboundary = handleSpeechBoundary;
-    utterance.onend = handleSpeechEnd;
-    utterance.onerror = (e) => {
-        console.error('Speech synthesis error:', e);
-        stopVisualizer();
-        showErrorBanner();
-    };
-}
-
-function setIndianVoice() {
-    if (!utterance || !synth) return;
-    const voices = synth.getVoices();
-    const diagVoice = document.getElementById('diagnostic-voice');
+    // 1. Reset state
+    voiceEng.stop();
+    uiCtrl.hideErrorBanner();
+    uiCtrl.resetHighlight();
+    uiCtrl.setCheckboxState(false, false);
     
-    let selectedVoice = null;
-    
-    const inVoices = voices.filter(v => 
-        v.lang === 'en-IN' || 
-        v.lang.toLowerCase().replace('_', '-').startsWith('en-in') ||
-        v.name.toLowerCase().includes('india') ||
-        v.name.toLowerCase().includes('indian')
-    );
-    
-    selectedVoice = inVoices.find(v => v.name.toLowerCase().includes('neural') || v.name.toLowerCase().includes('natural'));
-    
-    if (!selectedVoice && inVoices.length > 0) {
-        selectedVoice = inVoices[0];
-    }
-    
-    if (!selectedVoice) {
-        selectedVoice = voices.find(v => v.lang.toLowerCase().replace('_', '-').startsWith('en-gb'));
-    }
-    
-    if (!selectedVoice) {
-        selectedVoice = voices.find(v => v.lang.toLowerCase().replace('_', '-').startsWith('en-us'));
-    }
-    
-    if (!selectedVoice && voices.length > 0) {
-        selectedVoice = voices[0];
-    }
+    const continueBtnText = step === 3 ? 'Accept Pledge & Claim Certificate 🎓' : 'Continue to Next Step ➡️';
+    uiCtrl.setContinueButton(continueBtnText, true);
+    uiCtrl.updateProgress(step);
 
-    if (selectedVoice) {
-        utterance.voice = selectedVoice;
-        if (diagVoice) {
-            diagVoice.textContent = `Current Voice: ${selectedVoice.name} (${selectedVoice.lang})`;
-        }
-    } else {
-        if (diagVoice) {
-            diagVoice.textContent = `Current Voice: System Default`;
-        }
-    }
-}
+    // 2. Load text
+    currentPledgeText = pledgeCtrl.getPledgeText(step);
+    uiCtrl.renderPledgeText(currentPledgeText);
 
-function setupControls() {
-    const playBtn = document.getElementById('btn-play-voice');
-    const newPlayBtn = playBtn.cloneNode(true);
-    playBtn.parentNode.replaceChild(newPlayBtn, playBtn);
-    newPlayBtn.textContent = '🔊 Play Narration';
-    newPlayBtn.addEventListener('click', togglePlay);
+    // 3. Bind controls and auto-play (if supported)
+    voiceCtrl.bindControls(currentPledgeText, pronunciationDictionary);
+    uiCtrl.showPledgeMainCard();
 
-    const restartBtn = document.getElementById('btn-restart-voice');
-    const newRestartBtn = restartBtn.cloneNode(true);
-    restartBtn.parentNode.replaceChild(newRestartBtn, restartBtn);
-    newRestartBtn.addEventListener('click', restartReading);
-
-    const chk = document.getElementById('pledge-chk');
-    const newChk = chk.cloneNode(true);
-    chk.parentNode.replaceChild(newChk, chk);
-    newChk.addEventListener('change', handleCheckboxToggle);
-
-    const btn = document.getElementById('pledge-btn');
-    const newBtn = btn.cloneNode(true);
-    btn.parentNode.replaceChild(newBtn, btn);
-    newBtn.addEventListener('click', handleContinueClick);
-}
-
-function togglePlay() {
-    if (!synth || !utterance) {
-        showErrorBanner();
-        return;
-    }
-
-    if (isReading) {
-        synth.pause();
-        isReading = false;
-        document.getElementById('btn-play-voice').textContent = '🔊 Resume Narration';
-        stopVisualizer();
-    } else {
-        if (synth.paused) {
-            synth.resume();
-        } else {
-            synth.speak(utterance);
-        }
-        isReading = true;
-        document.getElementById('btn-play-voice').textContent = '⏸ Pause Narration';
-        startVisualizer();
-    }
-}
-
-function restartReading() {
-    if (!synth) return;
-    synth.cancel();
-    isReading = false;
-    document.getElementById('btn-play-voice').textContent = '🔊 Play Narration';
-    stopVisualizer();
-    clearWordHighlights();
-    togglePlay();
-}
-
-function handleSpeechBoundary(event) {
-    if (event.name !== 'word') return;
-    const charIndex = event.charIndex;
-    
-    const activeSegment = spokenSegments.find(s => charIndex >= s.start && charIndex < s.end);
-
-    if (activeSegment) {
-        clearWordHighlights();
-        const activeSpan = document.getElementById(`word-${activeSegment.origIndex}`);
-        if (activeSpan) {
-            activeSpan.classList.add('active');
-        }
-    }
-}
-
-function handleSpeechEnd() {
-    isReading = false;
-    speechCompleted = true;
-    document.getElementById('btn-play-voice').textContent = '🔊 Play Narration';
-    stopVisualizer();
-    clearWordHighlights();
-
-    const chk = document.getElementById('pledge-chk');
-    if (chk) chk.removeAttribute('disabled');
-    Utils.showToast(`Pledge Statement ${currentStep} complete. Please check the box.`, 'info');
-}
-
-function clearWordHighlights() {
-    document.querySelectorAll('.pledge-word').forEach(span => span.classList.remove('active'));
-}
-
-function startVisualizer() {
-    document.querySelectorAll('.visualizer-node').forEach(node => node.classList.add('active'));
-}
-
-function stopVisualizer() {
-    document.querySelectorAll('.visualizer-node').forEach(node => node.classList.remove('active'));
-}
-
-function showErrorBanner() {
-    const errorContainer = document.getElementById('speech-error-container');
-    if (errorContainer) {
-        errorContainer.style.display = 'block';
-    }
-    
+    // Setup checkbox toggle
     const chk = document.getElementById('pledge-chk');
     if (chk) {
-        chk.checked = false;
-        chk.setAttribute('disabled', 'true');
+        chk.addEventListener('change', (e) => {
+            uiCtrl.setContinueButton(continueBtnText, !e.target.checked);
+        });
     }
-    const btn = document.getElementById('pledge-btn');
-    if (btn) btn.setAttribute('disabled', 'true');
-}
 
-function hideErrorBanner() {
-    const errorContainer = document.getElementById('speech-error-container');
-    if (errorContainer) {
-        errorContainer.style.display = 'none';
-    }
-}
-
-function handleCheckboxToggle(e) {
-    const btn = document.getElementById('pledge-btn');
-    if (e.target.checked && speechCompleted) {
-        btn.removeAttribute('disabled');
-    } else {
-        btn.setAttribute('disabled', 'true');
+    // Setup continue click
+    const continueBtn = document.getElementById('pledge-btn');
+    if (continueBtn) {
+        continueBtn.addEventListener('click', handleContinueClick);
     }
 }
 
 async function handleContinueClick() {
-    // If not registered yet (temp_full_name mode)
-    if (!Utils.getQueryParam('id')) {
+    debugLog('Navigation', `Continue clicked at Step ${currentStep}`);
+    const participantId = SessionController.getParticipantId();
+
+    if (!participantId) {
+        // Pre-registration client flow
         if (currentStep < 3) {
             Utils.showToast(`Step ${currentStep} completed successfully!`, 'success');
             loadStep(currentStep + 1);
         } else {
-            // All pledges accepted, now show registration view
-            if (synth) synth.cancel();
-            document.getElementById('pledge-main-card').style.display = 'none';
-            document.getElementById('pledge-registration-card').style.display = 'block';
-            document.getElementById('reg-name').value = sessionStorage.getItem('temp_full_name') || '';
+            // Pre-registration pledges completed
+            voiceEng.stop();
+            SessionController.setPledgesCompleted(true);
+            uiCtrl.showRegistrationForm(SessionController.getTempName());
         }
     } else {
-        // Resume workflow (from DB participant ID)
+        // Resume workflow (direct DB updates)
         const btn = document.getElementById('pledge-btn');
-        btn.setAttribute('disabled', 'true');
+        if (btn) btn.setAttribute('disabled', 'true');
         Utils.showLoading(true);
 
         try {
-            const result = await DatabaseService.completePledgeStep(participant.id, currentStep, chosenPledgeText);
+            const result = await pledgeCtrl.saveStepProgress(currentStep, currentPledgeText);
             Utils.showLoading(false);
 
             if (currentStep < 3) {
@@ -418,16 +145,25 @@ async function handleContinueClick() {
                 loadStep(currentStep + 1);
             } else {
                 Utils.showToast('All pledges accepted! Generating certificate...', 'success');
+                SessionController.clearTempSession();
                 setTimeout(() => {
-                    window.location.href = `verify?id=${result.certificate.certificate_id}`;
+                    navCtrl.redirectToVerify(result.certificate.certificate_id);
                 }, 1200);
             }
         } catch (e) {
             Utils.showLoading(false);
-            console.error(e);
+            console.error('[Orchestrator] Save progress error:', e);
             Utils.showToast('Failed to save progress. Please try again.', 'error');
-            btn.removeAttribute('disabled');
+            if (btn) btn.removeAttribute('disabled');
         }
+    }
+}
+
+function bindRegistrationForm() {
+    const regForm = document.getElementById('post-pledge-registration-form');
+    if (regForm) {
+        // Clear any previous submit listener by replacing elements if necessary, but standard form submit logic is simple
+        regForm.onsubmit = handlePostPledgeRegistration;
     }
 }
 
@@ -439,7 +175,6 @@ function standardizeIndianPhone(phone) {
     return '+91' + match[1];
 }
 
-// Handle Post-Pledge Registration form submission
 async function handlePostPledgeRegistration(e) {
     e.preventDefault();
 
@@ -447,7 +182,7 @@ async function handlePostPledgeRegistration(e) {
     const whatsappInput = document.getElementById('reg-whatsapp').value.trim();
     const email = document.getElementById('reg-email').value.trim();
     const college = document.getElementById('reg-college').value.trim();
-    const referredBy = sessionStorage.getItem('referred_by');
+    const referredBy = SessionController.getReferredBy();
 
     const whatsapp = standardizeIndianPhone(whatsappInput);
     if (!whatsapp) {
@@ -463,43 +198,22 @@ async function handlePostPledgeRegistration(e) {
     Utils.showLoading(true);
 
     try {
-        // Create participant data with dummy values for Friend nominations to satisfy DB constraint
-        const participantData = {
-            fullName,
-            whatsappNumber: whatsapp,
-            email,
-            college,
-            referredBy: referredBy || null,
-            friend1Name: 'N/A',
-            friend1Whatsapp: '+910000000000',
-            friend2Name: 'N/A',
-            friend2Whatsapp: '+910000000000',
-            friend3Name: null,
-            friend3Whatsapp: null
-        };
-
-        // 1. Insert participant in database
-        const newPart = await DatabaseService.registerParticipant(participantData);
-
-        // 2. Complete all pledge steps in database to trigger certificate issue
-        await DatabaseService.completePledgeStep(newPart.id, 1, PLEDGES[1]);
-        await DatabaseService.completePledgeStep(newPart.id, 2, PLEDGES[2]);
-        const result = await DatabaseService.completePledgeStep(newPart.id, 3, PLEDGES[3]);
+        const regData = { fullName, whatsapp, email, college };
+        const result = await pledgeCtrl.registerParticipant(regData, referredBy);
 
         Utils.showLoading(false);
         Utils.showToast('Registration complete! Generating your certificate...', 'success');
 
-        // Clear temporary session storage items
-        sessionStorage.removeItem('temp_full_name');
-        sessionStorage.removeItem('referred_by');
+        // Clear session fields
+        SessionController.clearTempSession();
 
         setTimeout(() => {
-            window.location.href = `verify?id=${result.certificate.certificate_id}`;
+            navCtrl.redirectToVerify(result.certificate.certificate_id);
         }, 1200);
 
     } catch (err) {
         Utils.showLoading(false);
-        console.error(err);
+        console.error('[Orchestrator] Registration error:', err);
         Utils.showToast(err.message || 'Registration failed. Please try again.', 'error');
     }
 }
