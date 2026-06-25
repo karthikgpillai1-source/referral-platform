@@ -557,5 +557,142 @@ export const DatabaseService = {
             }
             return null;
         }
+    },
+
+    async verifyPassword(email, password) {
+        if (!CONFIG.IS_MOCK_MODE && supabaseClient) {
+            try {
+                const { error } = await supabaseClient.auth.signInWithPassword({
+                    email,
+                    password
+                });
+                return !error;
+            } catch (e) {
+                return false;
+            }
+        } else {
+            return (email === 'admin@example.com' || email === 'superadmin@example.com' || email === 'admin' || email === 'superadmin') && password === 'admin123';
+        }
+    },
+
+    async exportBackupData() {
+        if (!CONFIG.IS_MOCK_MODE && supabaseClient) {
+            const { data: participants, error: pe } = await supabaseClient.from('participants').select('*');
+            if (pe) throw pe;
+            const { data: referrals, error: re } = await supabaseClient.from('referrals').select('*');
+            if (re) throw re;
+            const { data: certificates, error: ce } = await supabaseClient.from('certificates').select('*');
+            if (ce) throw ce;
+            return { participants, referrals, certificates };
+        } else {
+            const participants = getLocalData(CONFIG.LOCAL_STORAGE_KEYS.PARTICIPANTS);
+            const referrals = getLocalData(CONFIG.LOCAL_STORAGE_KEYS.REFERRALS);
+            const certificates = getLocalData(CONFIG.LOCAL_STORAGE_KEYS.CERTIFICATES);
+            return { participants, referrals, certificates };
+        }
+    },
+
+    async performLaunchReset(options, email) {
+        if (!CONFIG.IS_MOCK_MODE && supabaseClient) {
+            const { data, error } = await supabaseClient.rpc('admin_launch_reset', {
+                delete_participants: options.deleteParticipants,
+                delete_referrals: options.deleteReferrals,
+                delete_certificates: options.deleteCertificates,
+                delete_events: options.deleteEvents,
+                reset_ref_seq: options.resetRefSeq,
+                reset_cert_seq: options.resetCertSeq,
+                performed_by_email: email
+            });
+            if (error) throw error;
+            return data;
+        } else {
+            const details = {
+                participants_deleted: 0,
+                referrals_deleted: 0,
+                certificates_deleted: 0,
+                events_deleted: 0,
+                ref_seq_reset: options.resetRefSeq,
+                cert_seq_reset: options.resetCertSeq
+            };
+
+            if (options.deleteReferrals) {
+                const count = getLocalData(CONFIG.LOCAL_STORAGE_KEYS.REFERRALS).length;
+                setLocalData(CONFIG.LOCAL_STORAGE_KEYS.REFERRALS, []);
+                details.referrals_deleted = count;
+            }
+            if (options.deleteCertificates) {
+                const count = getLocalData(CONFIG.LOCAL_STORAGE_KEYS.CERTIFICATES).length;
+                setLocalData(CONFIG.LOCAL_STORAGE_KEYS.CERTIFICATES, []);
+                details.certificates_deleted = count;
+            }
+            if (options.deleteParticipants) {
+                const count = getLocalData(CONFIG.LOCAL_STORAGE_KEYS.PARTICIPANTS).length;
+                setLocalData(CONFIG.LOCAL_STORAGE_KEYS.PARTICIPANTS, []);
+                details.participants_deleted = count;
+            }
+            if (options.deleteEvents) {
+                const count = getLocalData(CONFIG.LOCAL_STORAGE_KEYS.EVENTS).length;
+                setLocalData(CONFIG.LOCAL_STORAGE_KEYS.EVENTS, []);
+                details.events_deleted = count;
+            }
+
+            const auditLogs = JSON.parse(localStorage.getItem('ref_platform_audit_logs')) || [];
+            auditLogs.push({
+                action: 'LAUNCH_RESET',
+                performed_by: 'mock-admin',
+                performed_by_email: email,
+                details,
+                created_at: new Date().toISOString()
+            });
+            localStorage.setItem('ref_platform_audit_logs', JSON.stringify(auditLogs));
+
+            return details;
+        }
+    },
+
+    async verifyResetState(options) {
+        if (!CONFIG.IS_MOCK_MODE && supabaseClient) {
+            let pass = true;
+            const errors = [];
+
+            if (options.deleteParticipants) {
+                const { count } = await supabaseClient.from('participants').select('*', { count: 'exact', head: true });
+                if (count > 0) {
+                    pass = false;
+                    errors.push(`Participants count is ${count} (expected 0)`);
+                }
+            }
+            if (options.deleteReferrals) {
+                const { count } = await supabaseClient.from('referrals').select('*', { count: 'exact', head: true });
+                if (count > 0) {
+                    pass = false;
+                    errors.push(`Referrals count is ${count} (expected 0)`);
+                }
+            }
+            if (options.deleteCertificates) {
+                const { count } = await supabaseClient.from('certificates').select('*', { count: 'exact', head: true });
+                if (count > 0) {
+                    pass = false;
+                    errors.push(`Certificates count is ${count} (expected 0)`);
+                }
+            }
+            return { success: pass, errors };
+        } else {
+            let pass = true;
+            const errors = [];
+            if (options.deleteParticipants && getLocalData(CONFIG.LOCAL_STORAGE_KEYS.PARTICIPANTS).length > 0) {
+                pass = false;
+                errors.push('Participants table not cleared');
+            }
+            if (options.deleteReferrals && getLocalData(CONFIG.LOCAL_STORAGE_KEYS.REFERRALS).length > 0) {
+                pass = false;
+                errors.push('Referrals table not cleared');
+            }
+            if (options.deleteCertificates && getLocalData(CONFIG.LOCAL_STORAGE_KEYS.CERTIFICATES).length > 0) {
+                pass = false;
+                errors.push('Certificates table not cleared');
+            }
+            return { success: pass, errors };
+        }
     }
 };

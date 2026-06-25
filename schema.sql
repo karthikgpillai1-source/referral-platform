@@ -191,3 +191,96 @@ alter table admin_profiles enable row level security;
 create policy "Allow read access for authenticated users on admin_profiles" 
 on admin_profiles for select to authenticated using (true);
 
+
+-- 6. Audit Logs Table
+create table if not exists audit_logs (
+    id uuid default uuid_generate_v4() primary key,
+    action varchar(255) not null,
+    performed_by uuid references auth.users(id) on delete set null,
+    performed_by_email varchar(255),
+    details jsonb,
+    created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+-- Enable RLS on audit_logs
+alter table audit_logs enable row level security;
+
+-- Policies for audit_logs
+drop policy if exists "Allow read access to audit_logs for authenticated" on audit_logs;
+drop policy if exists "Allow inserts to audit_logs for authenticated" on audit_logs;
+
+create policy "Allow read access to audit_logs for authenticated" on audit_logs for select to authenticated using (true);
+create policy "Allow inserts to audit_logs for authenticated" on audit_logs for insert to authenticated with check (true);
+
+-- 7. Postgres RPC Function for Safe Launch Reset
+create or replace function admin_launch_reset(
+    delete_participants boolean,
+    delete_referrals boolean,
+    delete_certificates boolean,
+    delete_events boolean,
+    reset_ref_seq boolean,
+    reset_cert_seq boolean,
+    performed_by_email varchar
+) returns json security definer as $$
+declare
+    caller_role varchar;
+    deleted_p_count int := 0;
+    deleted_r_count int := 0;
+    deleted_c_count int := 0;
+    deleted_e_count int := 0;
+    details_json jsonb;
+begin
+    -- Verify caller is admin or super_admin
+    select role into caller_role from admin_profiles where id = auth.uid();
+    if caller_role is null or caller_role not in ('admin', 'super_admin') then
+        raise exception 'Unauthorized. Admin role required.';
+    end if;
+
+    -- Delete in correct dependency order to satisfy FK constraints
+    if delete_referrals then
+        delete from referrals;
+        get diagnostics deleted_r_count = row_count;
+    end if;
+
+    if delete_certificates then
+        delete from certificates;
+        get diagnostics deleted_c_count = row_count;
+    end if;
+
+    if delete_participants then
+        delete from participants;
+        get diagnostics deleted_p_count = row_count;
+    end if;
+
+    if delete_events then
+        delete from events;
+        get diagnostics deleted_e_count = row_count;
+    end if;
+
+    -- Reset Sequences if requested
+    if reset_ref_seq then
+        alter sequence participant_ref_seq restart with 1;
+    end if;
+    if reset_cert_seq then
+        alter sequence certificate_id_seq restart with 1;
+    end if;
+
+    -- Prepare log details
+    details_json := jsonb_build_object(
+        'participants_deleted', deleted_p_count,
+        'referrals_deleted', deleted_r_count,
+        'certificates_deleted', deleted_c_count,
+        'events_deleted', deleted_e_count,
+        'ref_seq_reset', reset_ref_seq,
+        'cert_seq_reset', reset_cert_seq
+    );
+
+    -- Write Audit Log
+    insert into audit_logs (action, performed_by, performed_by_email, details)
+    values ('LAUNCH_RESET', auth.uid(), performed_by_email, details_json);
+
+    return details_json;
+end;
+$$ language plpgsql;
+
+

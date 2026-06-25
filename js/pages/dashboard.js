@@ -36,24 +36,37 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Toggle API settings panel
-    const toggleSettingsBtn = document.getElementById('toggle-settings-btn');
-    const settingsCard = document.getElementById('settings-card');
-    if (toggleSettingsBtn && settingsCard) {
-        toggleSettingsBtn.addEventListener('click', () => {
-            const isHidden = settingsCard.style.display === 'none';
-            settingsCard.style.display = isHidden ? 'block' : 'none';
-            if (isHidden) {
-                document.getElementById('setting-supabase-url').value = localStorage.getItem('SUPABASE_URL') || '';
-                document.getElementById('setting-supabase-key').value = localStorage.getItem('SUPABASE_ANON_KEY') || '';
-            }
-        });
-    }
+    // Tabs Navigation Switcher
+    const tabDashboard = document.getElementById('tab-dashboard');
+    const tabSettings = document.getElementById('tab-settings');
+    const viewOverview = document.getElementById('view-overview-container');
+    const viewSettings = document.getElementById('view-settings-container');
 
-    const cancelSettingsBtn = document.getElementById('cancel-settings-btn');
-    if (cancelSettingsBtn && settingsCard) {
-        cancelSettingsBtn.addEventListener('click', () => {
-            settingsCard.style.display = 'none';
+    if (tabDashboard && tabSettings && viewOverview && viewSettings) {
+        tabDashboard.addEventListener('click', () => {
+            tabDashboard.classList.add('active');
+            tabSettings.classList.remove('active');
+            tabDashboard.style.color = 'var(--primary)';
+            tabDashboard.style.borderBottom = '2px solid var(--primary)';
+            tabSettings.style.color = 'var(--text-muted)';
+            tabSettings.style.borderBottom = 'none';
+            viewOverview.style.display = 'block';
+            viewSettings.style.display = 'none';
+        });
+
+        tabSettings.addEventListener('click', () => {
+            tabSettings.classList.add('active');
+            tabDashboard.classList.remove('active');
+            tabSettings.style.color = 'var(--primary)';
+            tabSettings.style.borderBottom = '2px solid var(--primary)';
+            tabDashboard.style.color = 'var(--text-muted)';
+            tabDashboard.style.borderBottom = 'none';
+            viewOverview.style.display = 'none';
+            viewSettings.style.display = 'block';
+
+            // Prefill credentials
+            document.getElementById('setting-supabase-url').value = localStorage.getItem('SUPABASE_URL') || '';
+            document.getElementById('setting-supabase-key').value = localStorage.getItem('SUPABASE_ANON_KEY') || '';
         });
     }
 
@@ -69,6 +82,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Campaign Link Generator Bindings
     const generateBtn = document.getElementById('btn-generate-campaign');
     if (generateBtn) generateBtn.addEventListener('click', handleGenerateCampaignLink);
+
+    // DANGER ZONE / LAUNCH RESET BINDINGS
+    setupResetFlow();
 });
 
 // Route Guard Verification
@@ -321,5 +337,179 @@ function renderParticipantsTable() {
 
         tbody.appendChild(tr);
         tbody.appendChild(trDetail);
+    });
+}
+
+function setupResetFlow() {
+    const btnTriggerReset = document.getElementById('btn-trigger-reset');
+    const modalAuth = document.getElementById('modal-auth');
+    const modalConfirm = document.getElementById('modal-confirm');
+
+    const btnAuthCancel = document.getElementById('btn-auth-cancel');
+    const btnAuthConfirm = document.getElementById('btn-auth-confirm');
+    const authPasswordInput = document.getElementById('auth-password');
+
+    const btnConfirmCancel = document.getElementById('btn-confirm-cancel');
+    const btnConfirmReset = document.getElementById('btn-confirm-reset');
+    const confirmTextInput = document.getElementById('confirm-text-input');
+
+    if (!btnTriggerReset) return;
+
+    const optParticipants = document.getElementById('reset-opt-participants');
+    const optReferrals = document.getElementById('reset-opt-referrals');
+    const optCertificates = document.getElementById('reset-opt-certificates');
+    const optEvents = document.getElementById('reset-opt-events');
+    const optRefSeq = document.getElementById('reset-opt-ref-seq');
+    const optCertSeq = document.getElementById('reset-opt-cert-seq');
+
+    btnTriggerReset.addEventListener('click', () => {
+        const anyChecked = optParticipants.checked || optReferrals.checked || optCertificates.checked || optEvents.checked || optRefSeq.checked || optCertSeq.checked;
+        if (!anyChecked) {
+            Utils.showToast('Please select at least one reset option.', 'warning');
+            return;
+        }
+
+        authPasswordInput.value = '';
+        modalAuth.style.display = 'flex';
+    });
+
+    btnAuthCancel.addEventListener('click', () => {
+        modalAuth.style.display = 'none';
+    });
+
+    btnAuthConfirm.addEventListener('click', async () => {
+        const password = authPasswordInput.value.trim();
+        if (!password) {
+            Utils.showToast('Password is required.', 'error');
+            return;
+        }
+
+        Utils.showLoading(true);
+        const currentUser = await DatabaseService.getCurrentUser();
+        if (!currentUser) {
+            Utils.showLoading(false);
+            Utils.showToast('Session expired. Please log in again.', 'error');
+            return;
+        }
+
+        const isVerified = await DatabaseService.verifyPassword(currentUser.email, password);
+        Utils.showLoading(false);
+
+        if (isVerified) {
+            modalAuth.style.display = 'none';
+            openConfirmModal();
+        } else {
+            Utils.showToast('Invalid administrator password.', 'error');
+        }
+    });
+
+    async function openConfirmModal() {
+        Utils.showLoading(true);
+        try {
+            const stats = await DatabaseService.getDashboardStats();
+            document.getElementById('reset-p-count').textContent = optParticipants.checked ? stats.totalParticipants : 0;
+            document.getElementById('reset-r-count').textContent = optReferrals.checked ? stats.totalReferrals : 0;
+            document.getElementById('reset-c-count').textContent = optCertificates.checked ? stats.totalCertificates : 0;
+
+            confirmTextInput.value = '';
+            btnConfirmReset.setAttribute('disabled', 'true');
+            modalConfirm.style.display = 'flex';
+        } catch (e) {
+            console.error(e);
+            Utils.showToast('Error preparing reset verification counts.', 'error');
+        } finally {
+            Utils.showLoading(false);
+        }
+    }
+
+    confirmTextInput.addEventListener('input', (e) => {
+        if (e.target.value.trim() === 'RESET PLATFORM') {
+            btnConfirmReset.removeAttribute('disabled');
+        } else {
+            btnConfirmReset.setAttribute('disabled', 'true');
+        }
+    });
+
+    btnConfirmCancel.addEventListener('click', () => {
+        modalConfirm.style.display = 'none';
+    });
+
+    btnConfirmReset.addEventListener('click', async () => {
+        modalConfirm.style.display = 'none';
+        Utils.showLoading(true);
+
+        const currentUser = await DatabaseService.getCurrentUser();
+        const email = currentUser ? currentUser.email : 'admin@example.com';
+
+        let backupData = null;
+        try {
+            backupData = await DatabaseService.exportBackupData();
+        } catch (err) {
+            console.error('Backup Compilation Error:', err);
+            Utils.showLoading(false);
+            Utils.showToast('Launch Reset aborted: Backup compilation failed.', 'error');
+            return;
+        }
+
+        try {
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+            const fileName = `campaign_backup_${timestamp}.json`;
+            const jsonStr = JSON.stringify(backupData, null, 2);
+            const blob = new Blob([jsonStr], { type: 'application/json' });
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            Utils.showToast('Export backup compiled & downloaded successfully.', 'success');
+        } catch (downloadErr) {
+            console.error('Backup Download Error:', downloadErr);
+            Utils.showLoading(false);
+            Utils.showToast('Launch Reset aborted: Backup file download failed.', 'error');
+            return;
+        }
+
+        try {
+            const options = {
+                deleteParticipants: optParticipants.checked,
+                deleteReferrals: optReferrals.checked,
+                deleteCertificates: optCertificates.checked,
+                deleteEvents: optEvents.checked,
+                resetRefSeq: optRefSeq.checked,
+                resetCertSeq: optCertSeq.checked
+            };
+
+            const detailsResult = await DatabaseService.performLaunchReset(options, email);
+
+            const verification = await DatabaseService.verifyResetState(options);
+            Utils.showLoading(false);
+
+            if (verification.success) {
+                let report = 'Reset completed successfully!\n';
+                report += `Participants deleted: ${detailsResult.participants_deleted || 0}\n`;
+                report += `Referrals deleted: ${detailsResult.referrals_deleted || 0}\n`;
+                report += `Certificates deleted: ${detailsResult.certificates_deleted || 0}\n`;
+                if (options.resetRefSeq) report += `Referral Sequence: Restarted to REF0001\n`;
+                if (options.resetCertSeq) report += `Certificate Sequence: Restarted to CERT-2026-000001\n`;
+
+                alert(report);
+                Utils.showToast('Launch Reset execution succeeded!', 'success');
+
+                loadDashboardData();
+                document.getElementById('tab-dashboard').click();
+            } else {
+                console.error('Post-reset verification failures:', verification.errors);
+                alert(`Reset Verification Failure:\n${verification.errors.join('\n')}`);
+                Utils.showToast('Reset finished with verification warnings.', 'warning');
+                loadDashboardData();
+            }
+        } catch (resetErr) {
+            console.error('Database reset failed:', resetErr);
+            Utils.showLoading(false);
+            Utils.showToast(`Launch Reset failed: ${resetErr.message || resetErr}`, 'error');
+        }
     });
 }
