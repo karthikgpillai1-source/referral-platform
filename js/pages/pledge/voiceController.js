@@ -1,5 +1,5 @@
-// Voice Controller - Integrates UI buttons with VoiceEngine events
-import { VoiceState } from '../../services/voiceEngine.js';
+// Voice Controller - Integrates UI buttons with VoiceManager events
+import { VoiceState } from '../../providers/voice/voiceManager.js';
 
 export class VoiceController {
     constructor(voiceEngine, uiController) {
@@ -19,22 +19,41 @@ export class VoiceController {
         };
 
         this.engine.onBoundary = (wordIndex, word) => {
-            this.ui.highlightWord(wordIndex);
+            this.ui.highlightWord(wordIndex, word);
         };
 
         this.engine.onError = (errMsg) => {
-            this.ui.showErrorBanner(`⚠️ Voice narration is unavailable: ${errMsg}`);
+            if (errMsg.includes('not-allowed') || errMsg.includes('user gesture')) {
+                this.ui.showErrorBanner('Voice narration is available. Press Play to listen.');
+            } else {
+                this.ui.showErrorBanner(`⚠️ Voice narration is unavailable: ${errMsg}`);
+            }
+        };
+
+        this.engine.onProgressUpdate = (percent, remaining) => {
+            this.ui.updatePlaybackMetrics(percent, remaining);
         };
     }
 
     handleStateChange(state) {
+        // Update diagnostics
+        let voiceName = 'System Default';
+        let providerName = 'None';
+
+        if (this.engine.provider) {
+            providerName = this.engine.provider.name;
+            if (this.engine.provider.selectedVoice) {
+                voiceName = this.engine.provider.selectedVoice.name;
+            }
+        }
+
         switch (state) {
             case VoiceState.PLAYING:
-                if (this.playBtn) this.playBtn.textContent = '⏸ Pause Narration';
+                if (this.playBtn) this.playBtn.textContent = '⏸ Pause';
                 this.ui.startVisualizer();
                 break;
             case VoiceState.PAUSED:
-                if (this.playBtn) this.playBtn.textContent = '🔊 Resume Narration';
+                if (this.playBtn) this.playBtn.textContent = '🔊 Resume';
                 this.ui.stopVisualizer();
                 break;
             case VoiceState.STOPPED:
@@ -44,17 +63,19 @@ export class VoiceController {
                 this.ui.resetHighlight();
                 break;
             case VoiceState.READY:
-                this.ui.setVoiceDiagnostics(
-                    this.engine.selectedVoice 
-                        ? `Current Voice: ${this.engine.selectedVoice.name} (${this.engine.selectedVoice.lang})` 
-                        : 'Current Voice: System Default'
-                );
+                this.ui.setVoiceDiagnostics(`Voice: ${voiceName}`);
                 break;
             case VoiceState.FAILED:
-                this.ui.setVoiceDiagnostics('Current Voice: Narration unavailable');
-                this.ui.showErrorBanner('⚠️ Voice narration is unavailable on this device. You can continue by reading the pledge yourself.');
+                this.ui.setVoiceDiagnostics('Voice: Narration unavailable');
                 break;
         }
+
+        // Update Diagnostics & Debug Panel
+        this.ui.updateDebugPanel({
+            provider: providerName,
+            voice: voiceName,
+            state: state
+        });
     }
 
     bindControls(pledgeText, pronunciationDict) {

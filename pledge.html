@@ -99,9 +99,25 @@
                 Continue to Next Step ➡️
             </button>
 
-            <!-- Voice Diagnostic Preview -->
-            <div id="diagnostic-voice" style="font-size: 12px; color: var(--text-muted); margin-top: 24px; font-family: var(--font-mono); opacity: 0.6;">
-                Current Voice: Detecting...
+            <!-- Voice Status & Diagnostics -->
+            <div style="margin-top: 24px; display: flex; justify-content: space-between; flex-wrap: wrap; font-size: 13px; font-family: var(--font-dashboard); color: var(--text-muted); gap: 12px;">
+                <div id="diagnostic-voice">Voice: Detecting...</div>
+                <div id="playback-metrics" style="display: none;">
+                    Progress: <span id="playback-progress">0%</span> | Remaining: <span id="playback-remaining">0s</span>
+                </div>
+            </div>
+
+            <!-- Optional Developer Debug Panel -->
+            <div id="developer-debug-panel" style="display: none; text-align: left; background: #0f172a; border: 1px dashed rgba(16, 185, 129, 0.4); padding: 16px; border-radius: var(--border-radius); font-size: 12px; font-family: var(--font-mono); margin-top: 24px; color: var(--text-muted);">
+                <div style="font-weight: 700; color: var(--primary); margin-bottom: 8px; font-size: 13px;">🛠️ Developer Debug Panel</div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px;">
+                    <div><strong>Provider:</strong> <span id="debug-provider">Detecting...</span></div>
+                    <div><strong>Voice:</strong> <span id="debug-voice">Detecting...</span></div>
+                    <div><strong>Speech State:</strong> <span id="debug-state">Detecting...</span></div>
+                    <div><strong>Remaining:</strong> <span id="debug-remaining">0s</span></div>
+                    <div><strong>Highlighted Word:</strong> <span id="debug-highlight">None</span></div>
+                    <div><strong>Total Words:</strong> <span id="debug-length">0 words</span></div>
+                </div>
             </div>
         </div>
 

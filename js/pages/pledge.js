@@ -1,5 +1,5 @@
 // Pledge Orchestrator - Main entry point linking all isolated controllers
-import { VoiceEngine } from '../services/voiceEngine.js';
+import { VoiceManager } from '../providers/voice/voiceManager.js';
 import { SessionController } from './pledge/sessionController.js';
 import { PledgeController, PLEDGES } from './pledge/pledgeController.js';
 import { UIController } from './pledge/uiController.js';
@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Instantiate Controllers
     pledgeCtrl = new PledgeController();
     uiCtrl = new UIController();
-    voiceEng = new VoiceEngine({ debug: DEBUG });
+    voiceEng = new VoiceManager({ debug: DEBUG });
     voiceCtrl = new VoiceController(voiceEng, uiCtrl);
     navCtrl = new NavigationController(pledgeCtrl, uiCtrl, SessionController);
 

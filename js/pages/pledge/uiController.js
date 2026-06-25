@@ -16,6 +16,29 @@ export class UIController {
         this.mainCard = document.getElementById('pledge-main-card');
         this.regCard = document.getElementById('pledge-registration-card');
         this.regNameInput = document.getElementById('reg-name');
+
+        // Playback Metrics
+        this.playbackMetrics = document.getElementById('playback-metrics');
+        this.playbackProgress = document.getElementById('playback-progress');
+        this.playbackRemaining = document.getElementById('playback-remaining');
+
+        // Developer Debug Panel Elements
+        this.debugPanel = document.getElementById('developer-debug-panel');
+        this.debugProvider = document.getElementById('debug-provider');
+        this.debugVoice = document.getElementById('debug-voice');
+        this.debugState = document.getElementById('debug-state');
+        this.debugRemaining = document.getElementById('debug-remaining');
+        this.debugHighlight = document.getElementById('debug-highlight');
+        this.debugLength = document.getElementById('debug-length');
+
+        this.initDebugVisibility();
+    }
+
+    initDebugVisibility() {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('debug') === 'true' && this.debugPanel) {
+            this.debugPanel.style.display = 'block';
+        }
     }
 
     renderPledgeText(chosenPledgeText) {
@@ -25,18 +48,29 @@ export class UIController {
             return `<span class="pledge-word" id="word-${idx}">${word}</span>`;
         });
         this.textContainer.innerHTML = spans.join(' ');
+
+        if (this.debugLength) {
+            this.debugLength.textContent = `${words.length} words`;
+        }
     }
 
-    highlightWord(wordIndex) {
+    highlightWord(wordIndex, wordText = '') {
         this.resetHighlight();
         const activeSpan = document.getElementById(`word-${wordIndex}`);
         if (activeSpan) {
             activeSpan.classList.add('active');
         }
+
+        if (this.debugHighlight) {
+            this.debugHighlight.textContent = wordText ? `${wordIndex}: "${wordText}"` : `${wordIndex}`;
+        }
     }
 
     resetHighlight() {
         document.querySelectorAll('.pledge-word').forEach(span => span.classList.remove('active'));
+        if (this.debugHighlight) {
+            this.debugHighlight.textContent = 'None';
+        }
     }
 
     updateProgress(step) {
@@ -93,6 +127,29 @@ export class UIController {
         if (this.diagVoice) {
             this.diagVoice.textContent = text;
         }
+    }
+
+    updatePlaybackMetrics(progressPercent, remainingSeconds) {
+        if (this.playbackMetrics) {
+            this.playbackMetrics.style.display = 'block';
+        }
+        if (this.playbackProgress) {
+            this.playbackProgress.textContent = `${progressPercent}%`;
+        }
+        if (this.playbackRemaining) {
+            this.playbackRemaining.textContent = `${remainingSeconds}s`;
+        }
+
+        // Also update Debug Panel if visible
+        if (this.debugRemaining) {
+            this.debugRemaining.textContent = `${remainingSeconds}s`;
+        }
+    }
+
+    updateDebugPanel(data = {}) {
+        if (data.provider && this.debugProvider) this.debugProvider.textContent = data.provider;
+        if (data.voice && this.debugVoice) this.debugVoice.textContent = data.voice;
+        if (data.state && this.debugState) this.debugState.textContent = data.state;
     }
 
     showRegistrationForm(name) {
