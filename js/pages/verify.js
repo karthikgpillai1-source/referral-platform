@@ -66,8 +66,8 @@ async function verifyCertificate(certId) {
             const refLink = ReferralService.generateReferralLink(participant.referral_code);
 
             // Configure Copy Buttons
-            setupCopyButton('copy-cert-link-btn', verificationUrl, 'Certificate verification link copied!');
-            setupCopyButton('copy-ref-link-btn', refLink, 'Referral invitation link copied!');
+            setupCopyButton('copy-cert-link-btn', verificationUrl, 'Certificate link copied ✓');
+            setupCopyButton('copy-ref-link-btn', refLink, 'Referral link copied ✓');
 
             // Configure Combined sharing & button handlers
             setupCombinedSharing(verificationUrl, refLink);
@@ -78,6 +78,7 @@ async function verifyCertificate(certId) {
                 const newDownloadBtn = downloadBtn.cloneNode(true);
                 downloadBtn.parentNode.replaceChild(newDownloadBtn, downloadBtn);
                 newDownloadBtn.addEventListener('click', () => {
+                    Utils.showToast('Download started', 'success');
                     CertificateService.exportToPDF('cert-pdf-target', `certificate-${certData.certificate_id}.pdf`);
                 });
             }

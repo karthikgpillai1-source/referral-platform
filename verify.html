@@ -18,37 +18,96 @@
     <style>
         .share-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 12px;
             margin: 16px 0;
+        }
+        @media (max-width: 768px) {
+            .share-grid {
+                grid-template-columns: 1fr;
+            }
         }
         .share-btn {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
-            padding: 10px;
-            border-radius: var(--border-radius-sm);
+            height: 44px;
+            border-radius: 12px;
             font-size: 13px;
             font-weight: 600;
             cursor: pointer;
             text-decoration: none;
-            color: #ffffff;
-            transition: var(--transition-smooth);
-            border: none;
+            transition: transform 0.2s ease-out, opacity 0.2s ease-out;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            outline: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
-        .share-btn-wa { background-color: #25D366; }
-        .share-btn-wa:hover { background-color: #20ba5a; }
-        .share-btn-fb { background-color: #1877F2; }
-        .share-btn-fb:hover { background-color: #166fe5; }
-        .share-btn-x { background-color: #000000; border: 1px solid #333333; }
-        .share-btn-x:hover { background-color: #111111; }
-        .share-btn-tg { background-color: #0088cc; }
-        .share-btn-tg:hover { background-color: #0077b5; }
-        .share-btn-email { background-color: #ea4335; }
-        .share-btn-email:hover { background-color: #d93025; }
-        .share-btn-copy { background-color: #374151; }
-        .share-btn-copy:hover { background-color: #4b5563; }
+        .share-btn-wa {
+            background-color: var(--primary);
+            color: #ffffff;
+            border-color: var(--primary);
+        }
+        .share-btn-wa:hover {
+            transform: translateY(-1px);
+            opacity: 0.9;
+        }
+        .share-btn-email, .share-btn-copy {
+            background-color: rgba(255, 255, 255, 0.02);
+            color: #ffffff;
+            border-color: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        .share-btn-email:hover, .share-btn-copy:hover {
+            transform: translateY(-1px);
+            opacity: 0.85;
+            background-color: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .cert-action-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin: 24px auto 0;
+            max-width: 650px;
+        }
+        @media (max-width: 768px) {
+            .cert-action-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .cert-action-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            height: 44px;
+            padding: 0 16px;
+            border-radius: 12px;
+            font-family: var(--font-accent);
+            font-weight: 700;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            outline: none;
+            background-color: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            transition: transform 0.2s ease-out, opacity 0.2s ease-out, background-color 0.2s ease-out, border-color 0.2s ease-out;
+        }
+        .cert-action-btn:hover {
+            background-color: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-1px);
+            opacity: 0.95;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+        }
 
         .congrats-header {
             margin-bottom: 24px;
@@ -168,24 +227,21 @@
                 <h4 style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 800; letter-spacing: 0.1em; margin-bottom: 12px; text-align: center;">Share Certificate & Invitation</h4>
                 <div class="share-grid">
                     <a href="#" id="share-cert-wa" target="_blank" class="share-btn share-btn-wa"><i data-lucide="message-circle" style="width: 14px; height: 14px;"></i> WhatsApp</a>
-                    <a href="#" id="share-cert-tg" target="_blank" class="share-btn share-btn-tg"><i data-lucide="send" style="width: 14px; height: 14px;"></i> Telegram</a>
-                    <a href="#" id="share-cert-fb" target="_blank" class="share-btn share-btn-fb"><i data-lucide="facebook" style="width: 14px; height: 14px;"></i> Facebook</a>
-                    <a href="#" id="share-cert-x" target="_blank" class="share-btn share-btn-x"><i data-lucide="twitter" style="width: 14px; height: 14px;"></i> X</a>
                     <a href="#" id="share-cert-email" target="_blank" class="share-btn share-btn-email"><i data-lucide="mail" style="width: 14px; height: 14px;"></i> Email</a>
-                    <button id="btn-copy-share-text" class="share-btn share-btn-copy"><i data-lucide="copy" style="width: 14px; height: 14px;"></i> Copy Text</button>
+                    <button id="btn-copy-share-text" class="share-btn share-btn-copy"><i data-lucide="copy" style="width: 14px; height: 14px;"></i> Copy Message</button>
                 </div>
             </div>
 
             <!-- Additional actions -->
-            <div style="margin-top: 24px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
-                <button id="download-pdf-btn" class="btn btn-secondary btn-sm">
-                    <i data-lucide="download" style="width: 12px; height: 12px;"></i> Download PDF
+            <div class="cert-action-grid">
+                <button id="download-pdf-btn" class="cert-action-btn">
+                    <i data-lucide="download" style="width: 14px; height: 14px;"></i> Download Certificate
                 </button>
-                <button id="copy-cert-link-btn" class="btn btn-secondary btn-sm">
-                    <i data-lucide="link-2" style="width: 12px; height: 12px;"></i> Copy Cert Link
+                <button id="copy-cert-link-btn" class="cert-action-btn">
+                    <i data-lucide="link" style="width: 14px; height: 14px;"></i> Copy Certificate Link
                 </button>
-                <button id="copy-ref-link-btn" class="btn btn-secondary btn-sm">
-                    <i data-lucide="user-plus" style="width: 12px; height: 12px;"></i> Copy Ref Link
+                <button id="copy-ref-link-btn" class="cert-action-btn">
+                    <i data-lucide="user-plus" style="width: 14px; height: 14px;"></i> Copy Referral Link
                 </button>
             </div>
 
