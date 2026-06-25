@@ -8,8 +8,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- Premium Icons CDN -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Animation Library CDN -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 </head>
 <body>
 
@@ -58,15 +56,8 @@
     <!-- Shared Microinteractions -->
     <script>
         lucide.createIcons();
-
-        // GSAP page load
-        gsap.from(".fade-in", {
-            opacity: 0,
-            y: 20,
-            duration: 0.6,
-            ease: "power2.out"
-        });
     </script>
+    <script type="module" src="js/performance.js"></script>
     <script type="module" src="js/pages/login.js?v=4"></script>
 </body>
 </html>
